@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, ChevronDown, CheckCircle, XCircle, Clock, Eye, FileText, X } from 'lucide-react';
+import { Search, CheckCircle, XCircle, Clock, Eye, FileText, X, Mail } from 'lucide-react';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
 
@@ -17,10 +17,14 @@ const statusOptions = [
 ];
 
 const statusColors = {
-  received: 'bg-blue-100 text-blue-700', under_review: 'bg-yellow-100 text-yellow-700',
-  documents_required: 'bg-orange-100 text-orange-700', shortlisted: 'bg-purple-100 text-purple-700',
-  employer_review: 'bg-indigo-100 text-indigo-700', approved: 'bg-green-100 text-green-700',
-  rejected: 'bg-red-100 text-red-700', completed: 'bg-gray-100 text-gray-700',
+  received: 'bg-blue-100 text-blue-700',
+  under_review: 'bg-yellow-100 text-yellow-700',
+  documents_required: 'bg-orange-100 text-orange-700',
+  shortlisted: 'bg-purple-100 text-purple-700',
+  employer_review: 'bg-indigo-100 text-indigo-700',
+  approved: 'bg-green-100 text-green-700',
+  rejected: 'bg-red-100 text-red-700',
+  completed: 'bg-gray-100 text-gray-700',
 };
 
 export default function AdminApplications() {
@@ -35,6 +39,7 @@ export default function AdminApplications() {
   const [newStatus, setNewStatus] = useState('');
   const [notes, setNotes] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [generatingOffer, setGeneratingOffer] = useState(null);
 
   const fetch = async (s = search, st = status, p = page) => {
     setLoading(true);
@@ -66,6 +71,19 @@ export default function AdminApplications() {
     finally { setUpdating(false); }
   };
 
+  const handleGenerateOffer = async (app) => {
+    if (!confirm(`Generate and send offer letter to ${app.first_name} ${app.last_name}?`)) return;
+    setGeneratingOffer(app.id);
+    try {
+      await api.post(`/offer-letter/${app.id}/generate`);
+      toast.success(`Offer letter sent to ${app.email}`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to generate offer letter');
+    } finally {
+      setGeneratingOffer(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -73,13 +91,12 @@ export default function AdminApplications() {
         <p className="text-gray-500 text-sm">{total} total applications</p>
       </div>
 
-      {/* Filters */}
       <div className="card">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input type="text" placeholder="Search by name, email, or application number..." value={search}
-              onChange={e => setSearch(e.target.value)}
+            <input type="text" placeholder="Search by name, email, or application number..."
+              value={search} onChange={e => setSearch(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (setPage(1), fetch(search, status, 1))}
               className="input-field pl-12" />
           </div>
@@ -90,7 +107,6 @@ export default function AdminApplications() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="card overflow-x-auto p-0">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
@@ -107,7 +123,8 @@ export default function AdminApplications() {
               ))
             ) : apps.length === 0 ? (
               <tr><td colSpan={8} className="text-center py-16">
-                <FileText className="w-12 h-12 mx-auto mb-3 text-gray-200" /><p className="text-gray-400">No applications found</p>
+                <FileText className="w-12 h-12 mx-auto mb-3 text-gray-200" />
+                <p className="text-gray-400">No applications found</p>
               </td></tr>
             ) : apps.map(app => (
               <tr key={app.id} className="hover:bg-gray-50 transition-colors">
@@ -121,9 +138,9 @@ export default function AdminApplications() {
                 <td className="px-4 py-4 text-sm text-gray-700 max-w-xs truncate">{app.desired_position}</td>
                 <td className="px-4 py-4 text-sm text-gray-500">{app.country || '—'}</td>
                 <td className="px-4 py-4">
-                  {app.lmia_number ? (
-                    <span className="font-mono text-xs text-green-700 bg-green-50 px-2 py-1 rounded">{app.lmia_number}</span>
-                  ) : <span className="text-gray-300 text-sm">—</span>}
+                  {app.lmia_number
+                    ? <span className="font-mono text-xs text-green-700 bg-green-50 px-2 py-1 rounded">{app.lmia_number}</span>
+                    : <span className="text-gray-300 text-sm">—</span>}
                 </td>
                 <td className="px-4 py-4">
                   <span className={`badge ${statusColors[app.status] || 'bg-gray-100 text-gray-700'}`}>
@@ -132,10 +149,24 @@ export default function AdminApplications() {
                 </td>
                 <td className="px-4 py-4 text-xs text-gray-400">{new Date(app.submitted_at).toLocaleDateString()}</td>
                 <td className="px-4 py-4">
-                  <button onClick={() => { setSelected(app); setNewStatus(app.status); setNotes(''); }}
-                    className="p-1.5 text-navy-600 hover:bg-navy-50 rounded-lg transition-colors" title="Update Status">
-                    <Eye className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => { setSelected(app); setNewStatus(app.status); setNotes(''); }}
+                      className="p-1.5 text-navy-600 hover:bg-navy-50 rounded-lg transition-colors" title="Update Status">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    {app.status === 'approved' && (
+                      <button
+                        onClick={() => handleGenerateOffer(app)}
+                        disabled={generatingOffer === app.id}
+                        className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="Generate and Send Offer Letter"
+                      >
+                        {generatingOffer === app.id
+                          ? <span className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin block" />
+                          : <Mail className="w-4 h-4" />}
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -153,7 +184,6 @@ export default function AdminApplications() {
         )}
       </div>
 
-      {/* Status Update Modal */}
       <AnimatePresence>
         {selected && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -169,7 +199,6 @@ export default function AdminApplications() {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">New Status</label>
@@ -180,11 +209,11 @@ export default function AdminApplications() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Notes (optional)</label>
                   <textarea rows={3} value={notes} onChange={e => setNotes(e.target.value)}
-                    placeholder="Add notes or instructions for the applicant..." className="input-field resize-none" />
+                    placeholder="Add notes for the applicant..." className="input-field resize-none" />
                 </div>
                 {newStatus === 'approved' && (
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
-                    ✅ An LMIA reference number will be automatically generated upon approval.
+                    An LMIA reference number will be automatically generated upon approval.
                   </div>
                 )}
                 <div className="flex gap-3">
