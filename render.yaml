@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: barry-group-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: barry-group-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://barry-group-frontend.onrender.com
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: EMAIL_FROM
+        value: "Barry Group Inc. <recruitment@barrygroup.ca>"
+
+  - type: web
+    name: barry-group-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://barry-group-backend.onrender.com/api
+
+databases:
+  - name: barry-group-db
+    databaseName: barrygroup_db
+    user: barrygroup
+    plan: free
