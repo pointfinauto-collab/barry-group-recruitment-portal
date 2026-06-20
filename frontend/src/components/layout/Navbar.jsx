@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Fish, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
@@ -25,22 +25,18 @@ export default function Navbar() {
     <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-navy-950/95 backdrop-blur-md shadow-lg' : 'bg-transparent'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gold rounded-lg flex items-center justify-center">
-              <Fish className="w-6 h-6 text-white" />
-            </div>
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/barry_group_logo.jpg" alt="Barry Group Inc." className="h-12 w-12 rounded-lg object-cover" />
             <div>
               <span className="text-white font-display font-bold text-xl leading-none">Barry Group</span>
               <p className="text-blue-300 text-xs">Inc. — Canada</p>
             </div>
           </Link>
 
-          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map(link => (
               <Link key={link.to} to={link.to}
-                className={`text-sm font-medium transition-colors ${location.pathname === link.to ? 'text-gold' : 'text-blue-100 hover:text-white'}`}>
+                className={`text-sm font-medium transition-colors ${location.pathname === link.to ? 'text-yellow-400' : 'text-blue-100 hover:text-white'}`}>
                 {link.label}
               </Link>
             ))}
@@ -60,14 +56,12 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile toggle */}
           <button onClick={() => setOpen(!open)} className="md:hidden text-white p-2">
             {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {open && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
