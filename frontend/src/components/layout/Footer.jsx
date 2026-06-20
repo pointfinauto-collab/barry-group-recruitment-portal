@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Fish, Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -9,21 +9,25 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gold rounded-lg flex items-center justify-center">
-                <Fish className="w-6 h-6 text-white" />
-              </div>
+              <img src="/barry_group_logo.jpg" alt="Barry Group Inc." className="h-14 w-14 rounded-xl object-cover" />
               <div>
                 <span className="text-white font-display font-bold text-xl">Barry Group Inc.</span>
                 <p className="text-blue-400 text-xs">Canadian Seafood Processing & Export</p>
+                <p className="text-yellow-400 text-xs italic">Take Control. Plan to Succeed.</p>
               </div>
             </div>
             <p className="text-blue-300 text-sm leading-relaxed max-w-sm">
               A leading Canadian seafood processing and export company offering employment opportunities for skilled workers from around the world.
             </p>
             <div className="mt-6 space-y-2">
-              <div className="flex items-center gap-2 text-sm"><MapPin className="w-4 h-4 text-gold flex-shrink-0" /><span>Nova Scotia, Canada</span></div>
-              <div className="flex items-center gap-2 text-sm"><Mail className="w-4 h-4 text-gold flex-shrink-0" /><span>recruitment@barrygroup.ca</span></div>
-              <div className="flex items-center gap-2 text-sm"><Phone className="w-4 h-4 text-gold flex-shrink-0" /><span>+1 (902) 555-0100</span></div>
+              <div className="flex items-center gap-2 text-sm">
+                <MapPin className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                <span>415 Griffin Dr, Corner Brook, NL A2H 3E9, Canada</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Mail className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                <span>barrygroup.ltd.inc@gmail.com</span>
+              </div>
             </div>
           </div>
 
