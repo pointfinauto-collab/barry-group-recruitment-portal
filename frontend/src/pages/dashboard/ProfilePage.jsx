@@ -6,21 +6,51 @@ import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const countries = [
-  'Afghanistan','Albania','Algeria','Angola','Argentina','Australia','Austria',
-  'Bangladesh','Belgium','Bolivia','Brazil','Cambodia','Cameroon','Canada','Chile',
-  'China','Colombia','Congo','Costa Rica','Croatia','Cuba','Czech Republic',
-  'Denmark','Dominican Republic','Ecuador','Egypt','El Salvador','Ethiopia',
-  'Finland','France','Germany','Ghana','Greece','Guatemala','Guinea','Haiti',
-  'Honduras','Hungary','India','Indonesia','Iran','Iraq','Ireland','Israel',
-  'Italy','Jamaica','Japan','Jordan','Kenya','South Korea','Lebanon','Libya',
-  'Madagascar','Malaysia','Mali','Mexico','Morocco','Mozambique','Myanmar',
-  'Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','Norway',
-  'Pakistan','Panama','Paraguay','Peru','Philippines','Poland','Portugal',
-  'Romania','Russia','Rwanda','Saudi Arabia','Senegal','Serbia','Sierra Leone',
-  'Somalia','South Africa','Spain','Sri Lanka','Sudan','Sweden','Switzerland',
-  'Syria','Tanzania','Thailand','Togo','Tunisia','Turkey','Uganda','Ukraine',
-  'United Kingdom','United States','Uruguay','Venezuela','Vietnam','Yemen',
-  'Zambia','Zimbabwe','Other'
+  // ── AFRICA ──
+  'Algeria','Angola','Benin','Botswana','Burkina Faso','Burundi','Cameroon',
+  'Cape Verde','Central African Republic','Chad','Comoros','Congo','Côte d\'Ivoire',
+  'Djibouti','DR Congo','Egypt','Equatorial Guinea','Eritrea','Eswatini','Ethiopia',
+  'Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Kenya','Lesotho','Liberia',
+  'Libya','Madagascar','Malawi','Mali','Mauritania','Mauritius','Morocco',
+  'Mozambique','Namibia','Niger','Nigeria','Rwanda','São Tomé and Príncipe',
+  'Senegal','Seychelles','Sierra Leone','Somalia','South Africa','South Sudan',
+  'Sudan','Tanzania','Togo','Tunisia','Uganda','Zambia','Zimbabwe',
+
+  // ── MIDDLE EAST ──
+  'Bahrain','Iran','Iraq','Israel','Jordan','Kuwait','Lebanon','Oman',
+  'Palestine','Qatar','Saudi Arabia','Syria','United Arab Emirates (UAE)',
+  'Yemen',
+
+  // ── ASIA ──
+  'Afghanistan','Armenia','Azerbaijan','Bangladesh','Bhutan','Brunei','Cambodia',
+  'China','Cyprus','Georgia','India','Indonesia','Japan','Kazakhstan','Kyrgyzstan',
+  'Laos','Malaysia','Maldives','Mongolia','Myanmar','Nepal','North Korea',
+  'Pakistan','Philippines','Singapore','South Korea','Sri Lanka','Taiwan',
+  'Tajikistan','Thailand','Timor-Leste','Turkmenistan','Uzbekistan','Vietnam',
+
+  // ── EUROPE ──
+  'Albania','Andorra','Austria','Belarus','Belgium','Bosnia and Herzegovina',
+  'Bulgaria','Croatia','Czech Republic','Denmark','Estonia','Finland','France',
+  'Germany','Greece','Hungary','Iceland','Ireland','Italy','Kosovo','Latvia',
+  'Liechtenstein','Lithuania','Luxembourg','Malta','Moldova','Monaco','Montenegro',
+  'Netherlands','North Macedonia','Norway','Poland','Portugal','Romania','Russia',
+  'San Marino','Serbia','Slovakia','Slovenia','Spain','Sweden','Switzerland',
+  'Turkey','Ukraine','United Kingdom','Vatican City',
+
+  // ── AMERICAS ──
+  'Antigua and Barbuda','Argentina','Bahamas','Barbados','Belize','Bolivia',
+  'Brazil','Canada','Chile','Colombia','Costa Rica','Cuba','Dominica',
+  'Dominican Republic','Ecuador','El Salvador','Grenada','Guatemala','Guyana',
+  'Haiti','Honduras','Jamaica','Mexico','Nicaragua','Panama','Paraguay','Peru',
+  'Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines',
+  'Suriname','Trinidad and Tobago','United States','Uruguay','Venezuela',
+
+  // ── OCEANIA ──
+  'Australia','Fiji','Kiribati','Marshall Islands','Micronesia','Nauru',
+  'New Zealand','Palau','Papua New Guinea','Samoa','Solomon Islands','Tonga',
+  'Tuvalu','Vanuatu',
+
+  'Other',
 ];
 
 const educationLevels = [
@@ -39,7 +69,7 @@ const genders = ['Male', 'Female', 'Non-binary', 'Prefer not to say'];
 const maritalStatuses = ['Single', 'Married', 'Divorced', 'Widowed', 'Separated'];
 
 const currentYear = new Date().getFullYear();
-const graduationYears = Array.from({ length: 50 }, (_, i) => currentYear - i);
+const graduationYears = Array.from({ length: 55 }, (_, i) => currentYear - i);
 
 const experienceOptions = [
   { value: '0', label: 'No experience' },
@@ -139,17 +169,216 @@ export default function ProfilePage() {
     </div>
   );
 
-  // Reusable label component
   const Label = ({ text, required }) => (
     <label className="block text-sm font-medium text-gray-700 mb-1.5">
       {text} {required && <span className="text-red-500">*</span>}
     </label>
   );
 
-  // Reusable select component
-  const Select = ({ name, placeholder, options, value }) => (
+  const CountrySelect = ({ name, placeholder }) => (
     <select
-      value={value || form[name]}
+      value={form[name]}
+      onChange={e => set(name, e.target.value)}
+      className="input-field bg-white cursor-pointer"
+    >
+      <option value="">{placeholder}</option>
+      <optgroup label="── MIDDLE EAST ──">
+        <option value="Bahrain">Bahrain</option>
+        <option value="Iran">Iran</option>
+        <option value="Iraq">Iraq</option>
+        <option value="Israel">Israel</option>
+        <option value="Jordan">Jordan</option>
+        <option value="Kuwait">Kuwait</option>
+        <option value="Lebanon">Lebanon</option>
+        <option value="Oman">Oman</option>
+        <option value="Palestine">Palestine</option>
+        <option value="Qatar">Qatar</option>
+        <option value="Saudi Arabia">Saudi Arabia</option>
+        <option value="Syria">Syria</option>
+        <option value="United Arab Emirates (UAE)">United Arab Emirates (UAE)</option>
+        <option value="Yemen">Yemen</option>
+      </optgroup>
+      <optgroup label="── AFRICA ──">
+        <option value="Algeria">Algeria</option>
+        <option value="Angola">Angola</option>
+        <option value="Benin">Benin</option>
+        <option value="Botswana">Botswana</option>
+        <option value="Burkina Faso">Burkina Faso</option>
+        <option value="Burundi">Burundi</option>
+        <option value="Cameroon">Cameroon</option>
+        <option value="Cape Verde">Cape Verde</option>
+        <option value="Central African Republic">Central African Republic</option>
+        <option value="Chad">Chad</option>
+        <option value="Comoros">Comoros</option>
+        <option value="Congo">Congo</option>
+        <option value="Côte d'Ivoire">Côte d'Ivoire</option>
+        <option value="Djibouti">Djibouti</option>
+        <option value="DR Congo">DR Congo</option>
+        <option value="Egypt">Egypt</option>
+        <option value="Equatorial Guinea">Equatorial Guinea</option>
+        <option value="Eritrea">Eritrea</option>
+        <option value="Eswatini">Eswatini</option>
+        <option value="Ethiopia">Ethiopia</option>
+        <option value="Gabon">Gabon</option>
+        <option value="Gambia">Gambia</option>
+        <option value="Ghana">Ghana</option>
+        <option value="Guinea">Guinea</option>
+        <option value="Guinea-Bissau">Guinea-Bissau</option>
+        <option value="Kenya">Kenya</option>
+        <option value="Lesotho">Lesotho</option>
+        <option value="Liberia">Liberia</option>
+        <option value="Libya">Libya</option>
+        <option value="Madagascar">Madagascar</option>
+        <option value="Malawi">Malawi</option>
+        <option value="Mali">Mali</option>
+        <option value="Mauritania">Mauritania</option>
+        <option value="Mauritius">Mauritius</option>
+        <option value="Morocco">Morocco</option>
+        <option value="Mozambique">Mozambique</option>
+        <option value="Namibia">Namibia</option>
+        <option value="Niger">Niger</option>
+        <option value="Nigeria">Nigeria</option>
+        <option value="Rwanda">Rwanda</option>
+        <option value="Senegal">Senegal</option>
+        <option value="Seychelles">Seychelles</option>
+        <option value="Sierra Leone">Sierra Leone</option>
+        <option value="Somalia">Somalia</option>
+        <option value="South Africa">South Africa</option>
+        <option value="South Sudan">South Sudan</option>
+        <option value="Sudan">Sudan</option>
+        <option value="Tanzania">Tanzania</option>
+        <option value="Togo">Togo</option>
+        <option value="Tunisia">Tunisia</option>
+        <option value="Uganda">Uganda</option>
+        <option value="Zambia">Zambia</option>
+        <option value="Zimbabwe">Zimbabwe</option>
+      </optgroup>
+      <optgroup label="── ASIA ──">
+        <option value="Afghanistan">Afghanistan</option>
+        <option value="Armenia">Armenia</option>
+        <option value="Azerbaijan">Azerbaijan</option>
+        <option value="Bangladesh">Bangladesh</option>
+        <option value="Bhutan">Bhutan</option>
+        <option value="Brunei">Brunei</option>
+        <option value="Cambodia">Cambodia</option>
+        <option value="China">China</option>
+        <option value="Cyprus">Cyprus</option>
+        <option value="Georgia">Georgia</option>
+        <option value="India">India</option>
+        <option value="Indonesia">Indonesia</option>
+        <option value="Japan">Japan</option>
+        <option value="Kazakhstan">Kazakhstan</option>
+        <option value="Kyrgyzstan">Kyrgyzstan</option>
+        <option value="Laos">Laos</option>
+        <option value="Malaysia">Malaysia</option>
+        <option value="Maldives">Maldives</option>
+        <option value="Mongolia">Mongolia</option>
+        <option value="Myanmar">Myanmar</option>
+        <option value="Nepal">Nepal</option>
+        <option value="North Korea">North Korea</option>
+        <option value="Pakistan">Pakistan</option>
+        <option value="Philippines">Philippines</option>
+        <option value="Singapore">Singapore</option>
+        <option value="South Korea">South Korea</option>
+        <option value="Sri Lanka">Sri Lanka</option>
+        <option value="Taiwan">Taiwan</option>
+        <option value="Tajikistan">Tajikistan</option>
+        <option value="Thailand">Thailand</option>
+        <option value="Timor-Leste">Timor-Leste</option>
+        <option value="Turkmenistan">Turkmenistan</option>
+        <option value="Uzbekistan">Uzbekistan</option>
+        <option value="Vietnam">Vietnam</option>
+      </optgroup>
+      <optgroup label="── EUROPE ──">
+        <option value="Albania">Albania</option>
+        <option value="Andorra">Andorra</option>
+        <option value="Austria">Austria</option>
+        <option value="Belarus">Belarus</option>
+        <option value="Belgium">Belgium</option>
+        <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+        <option value="Bulgaria">Bulgaria</option>
+        <option value="Croatia">Croatia</option>
+        <option value="Czech Republic">Czech Republic</option>
+        <option value="Denmark">Denmark</option>
+        <option value="Estonia">Estonia</option>
+        <option value="Finland">Finland</option>
+        <option value="France">France</option>
+        <option value="Germany">Germany</option>
+        <option value="Greece">Greece</option>
+        <option value="Hungary">Hungary</option>
+        <option value="Iceland">Iceland</option>
+        <option value="Ireland">Ireland</option>
+        <option value="Italy">Italy</option>
+        <option value="Kosovo">Kosovo</option>
+        <option value="Latvia">Latvia</option>
+        <option value="Lithuania">Lithuania</option>
+        <option value="Luxembourg">Luxembourg</option>
+        <option value="Malta">Malta</option>
+        <option value="Moldova">Moldova</option>
+        <option value="Monaco">Monaco</option>
+        <option value="Montenegro">Montenegro</option>
+        <option value="Netherlands">Netherlands</option>
+        <option value="North Macedonia">North Macedonia</option>
+        <option value="Norway">Norway</option>
+        <option value="Poland">Poland</option>
+        <option value="Portugal">Portugal</option>
+        <option value="Romania">Romania</option>
+        <option value="Russia">Russia</option>
+        <option value="Serbia">Serbia</option>
+        <option value="Slovakia">Slovakia</option>
+        <option value="Slovenia">Slovenia</option>
+        <option value="Spain">Spain</option>
+        <option value="Sweden">Sweden</option>
+        <option value="Switzerland">Switzerland</option>
+        <option value="Turkey">Turkey</option>
+        <option value="Ukraine">Ukraine</option>
+        <option value="United Kingdom">United Kingdom</option>
+      </optgroup>
+      <optgroup label="── AMERICAS ──">
+        <option value="Antigua and Barbuda">Antigua and Barbuda</option>
+        <option value="Argentina">Argentina</option>
+        <option value="Bahamas">Bahamas</option>
+        <option value="Barbados">Barbados</option>
+        <option value="Belize">Belize</option>
+        <option value="Bolivia">Bolivia</option>
+        <option value="Brazil">Brazil</option>
+        <option value="Canada">Canada</option>
+        <option value="Chile">Chile</option>
+        <option value="Colombia">Colombia</option>
+        <option value="Costa Rica">Costa Rica</option>
+        <option value="Cuba">Cuba</option>
+        <option value="Dominican Republic">Dominican Republic</option>
+        <option value="Ecuador">Ecuador</option>
+        <option value="El Salvador">El Salvador</option>
+        <option value="Guatemala">Guatemala</option>
+        <option value="Guyana">Guyana</option>
+        <option value="Haiti">Haiti</option>
+        <option value="Honduras">Honduras</option>
+        <option value="Jamaica">Jamaica</option>
+        <option value="Mexico">Mexico</option>
+        <option value="Nicaragua">Nicaragua</option>
+        <option value="Panama">Panama</option>
+        <option value="Paraguay">Paraguay</option>
+        <option value="Peru">Peru</option>
+        <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+        <option value="United States">United States</option>
+        <option value="Uruguay">Uruguay</option>
+        <option value="Venezuela">Venezuela</option>
+      </optgroup>
+      <optgroup label="── OCEANIA ──">
+        <option value="Australia">Australia</option>
+        <option value="Fiji">Fiji</option>
+        <option value="New Zealand">New Zealand</option>
+        <option value="Papua New Guinea">Papua New Guinea</option>
+        <option value="Samoa">Samoa</option>
+      </optgroup>
+      <option value="Other">Other</option>
+    </select>
+  );
+
+  const SimpleSelect = ({ name, placeholder, options }) => (
+    <select
+      value={form[name]}
       onChange={e => set(name, e.target.value)}
       className="input-field bg-white cursor-pointer"
     >
@@ -169,10 +398,9 @@ export default function ProfilePage() {
           <div>
             <h1 className="text-2xl font-display font-bold text-navy-900">My Profile</h1>
             <p className="text-gray-500 text-sm mt-1">
-              Complete your profile to strengthen your application. Use the dropdowns to select values.
+              Complete your profile using the dropdowns and date pickers below.
             </p>
           </div>
-          {/* Completion Circle */}
           <div className="flex items-center gap-3 bg-white rounded-2xl px-4 py-3 shadow-sm border border-gray-100">
             <div className="relative w-14 h-14">
               <svg className="w-14 h-14 -rotate-90" viewBox="0 0 36 36">
@@ -194,292 +422,199 @@ export default function ProfilePage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* ── PERSONAL INFORMATION ── */}
+        {/* ── SECTION 1: PERSONAL INFORMATION ── */}
         <div className="card">
           <h2 className="text-base font-semibold text-navy-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
             <span className="w-7 h-7 bg-navy-800 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
             Personal Information
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
             <div>
               <Label text="First Name" required />
-              <input
-                type="text"
-                value={form.first_name}
+              <input type="text" value={form.first_name}
                 onChange={e => set('first_name', e.target.value)}
-                placeholder="Enter your first name"
-                className="input-field"
-                required
-              />
+                placeholder="Enter your first name" className="input-field" required />
             </div>
-
             <div>
               <Label text="Last Name" required />
-              <input
-                type="text"
-                value={form.last_name}
+              <input type="text" value={form.last_name}
                 onChange={e => set('last_name', e.target.value)}
-                placeholder="Enter your last name"
-                className="input-field"
-                required
-              />
+                placeholder="Enter your last name" className="input-field" required />
             </div>
-
             <div>
               <Label text="Phone Number" />
-              <input
-                type="tel"
-                value={form.phone}
+              <input type="tel" value={form.phone}
                 onChange={e => set('phone', e.target.value)}
-                placeholder="+1 234 567 8900"
-                className="input-field"
-              />
-              <p className="text-xs text-gray-400 mt-1">Include country code e.g. +254 700 000000</p>
+                placeholder="+1 234 567 8900" className="input-field" />
+              <p className="text-xs text-gray-400 mt-1">Include country code e.g. +966 50 000 0000</p>
             </div>
-
             <div>
               <Label text="Date of Birth" />
-              <input
-                type="date"
-                value={form.date_of_birth}
+              <input type="date" value={form.date_of_birth}
                 onChange={e => set('date_of_birth', e.target.value)}
                 max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
-                min="1940-01-01"
-                className="input-field"
-              />
-              <p className="text-xs text-gray-400 mt-1">Click the calendar icon to pick a date</p>
+                min="1940-01-01" className="input-field" />
+              <p className="text-xs text-gray-400 mt-1">Click the field to open date picker</p>
             </div>
-
             <div>
               <Label text="Gender" />
-              <Select name="gender" placeholder="-- Select Gender --" options={genders} />
+              <SimpleSelect name="gender" placeholder="-- Select Gender --" options={genders} />
             </div>
-
             <div>
               <Label text="Marital Status" />
-              <Select name="marital_status" placeholder="-- Select Marital Status --" options={maritalStatuses} />
+              <SimpleSelect name="marital_status" placeholder="-- Select Marital Status --" options={maritalStatuses} />
             </div>
-
             <div>
               <Label text="Nationality" />
-              <Select name="nationality" placeholder="-- Select Nationality --" options={countries} />
+              <CountrySelect name="nationality" placeholder="-- Select Your Nationality --" />
             </div>
-
           </div>
         </div>
 
-        {/* ── CONTACT INFORMATION ── */}
+        {/* ── SECTION 2: CONTACT INFORMATION ── */}
         <div className="card">
           <h2 className="text-base font-semibold text-navy-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
             <span className="w-7 h-7 bg-navy-800 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
             Contact Information
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
             <div className="sm:col-span-2">
               <Label text="Street Address" />
-              <input
-                type="text"
-                value={form.address}
+              <input type="text" value={form.address}
                 onChange={e => set('address', e.target.value)}
-                placeholder="123 Main Street, Apartment 4B"
-                className="input-field"
-              />
+                placeholder="123 Main Street, Apartment 4B" className="input-field" />
             </div>
-
             <div>
               <Label text="City / Town" />
-              <input
-                type="text"
-                value={form.city}
+              <input type="text" value={form.city}
                 onChange={e => set('city', e.target.value)}
-                placeholder="Enter your city or town"
-                className="input-field"
-              />
+                placeholder="Enter your city or town" className="input-field" />
             </div>
-
             <div>
-              <Label text="Country" />
-              <Select name="country" placeholder="-- Select Your Country --" options={countries} />
+              <Label text="Country of Residence" />
+              <CountrySelect name="country" placeholder="-- Select Your Country --" />
             </div>
-
           </div>
         </div>
 
-        {/* ── PASSPORT INFORMATION ── */}
+        {/* ── SECTION 3: PASSPORT INFORMATION ── */}
         <div className="card">
           <h2 className="text-base font-semibold text-navy-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
             <span className="w-7 h-7 bg-navy-800 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
             Passport Information
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
             <div>
               <Label text="Passport Number" />
-              <input
-                type="text"
-                value={form.passport_number}
+              <input type="text" value={form.passport_number}
                 onChange={e => set('passport_number', e.target.value.toUpperCase())}
                 placeholder="e.g. A12345678"
-                className="input-field font-mono tracking-widest"
-                maxLength={20}
-              />
-              <p className="text-xs text-gray-400 mt-1">Enter exactly as shown on your passport</p>
+                className="input-field font-mono tracking-widest" maxLength={20} />
+              <p className="text-xs text-gray-400 mt-1">Auto-converts to uppercase</p>
             </div>
-
             <div>
               <Label text="Issue Date" />
-              <input
-                type="date"
-                value={form.passport_issue_date}
+              <input type="date" value={form.passport_issue_date}
                 onChange={e => set('passport_issue_date', e.target.value)}
                 max={new Date().toISOString().split('T')[0]}
-                min="2000-01-01"
-                className="input-field"
-              />
+                min="2000-01-01" className="input-field" />
               <p className="text-xs text-gray-400 mt-1">Date passport was issued</p>
             </div>
-
             <div>
               <Label text="Expiry Date" />
-              <input
-                type="date"
-                value={form.passport_expiry_date}
+              <input type="date" value={form.passport_expiry_date}
                 onChange={e => set('passport_expiry_date', e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                max="2040-12-31"
-                className="input-field"
-              />
-              <p className="text-xs text-gray-400 mt-1">Must be valid for at least 6 months</p>
+                max="2040-12-31" className="input-field" />
+              <p className="text-xs text-gray-400 mt-1">Must be valid for 6+ months</p>
             </div>
-
           </div>
         </div>
 
-        {/* ── EDUCATION ── */}
+        {/* ── SECTION 4: EDUCATION ── */}
         <div className="card">
           <h2 className="text-base font-semibold text-navy-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
             <span className="w-7 h-7 bg-navy-800 text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
             Education
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
             <div>
               <Label text="Highest Education Level" />
-              <Select
-                name="education_level"
+              <SimpleSelect name="education_level"
                 placeholder="-- Select Education Level --"
-                options={educationLevels}
-              />
+                options={educationLevels} />
             </div>
-
             <div>
               <Label text="Graduation Year" />
-              <Select
-                name="graduation_year"
+              <SimpleSelect name="graduation_year"
                 placeholder="-- Select Year --"
-                options={graduationYears.map(y => ({ value: String(y), label: String(y) }))}
-              />
+                options={graduationYears.map(y => ({ value: String(y), label: String(y) }))} />
             </div>
-
             <div>
               <Label text="Institution / School Name" />
-              <input
-                type="text"
-                value={form.institution_name}
+              <input type="text" value={form.institution_name}
                 onChange={e => set('institution_name', e.target.value)}
-                placeholder="Name of school or university"
-                className="input-field"
-              />
+                placeholder="Name of school or university" className="input-field" />
             </div>
-
             <div>
               <Label text="Program / Field of Study" />
-              <input
-                type="text"
-                value={form.program}
+              <input type="text" value={form.program}
                 onChange={e => set('program', e.target.value)}
-                placeholder="e.g. Business Administration"
-                className="input-field"
-              />
+                placeholder="e.g. Business Administration" className="input-field" />
             </div>
-
           </div>
         </div>
 
-        {/* ── WORK EXPERIENCE ── */}
+        {/* ── SECTION 5: WORK EXPERIENCE ── */}
         <div className="card">
           <h2 className="text-base font-semibold text-navy-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
             <span className="w-7 h-7 bg-navy-800 text-white rounded-full flex items-center justify-center text-xs font-bold">5</span>
             Work Experience
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
             <div>
               <Label text="Current Occupation / Job Title" />
-              <input
-                type="text"
-                value={form.current_occupation}
+              <input type="text" value={form.current_occupation}
                 onChange={e => set('current_occupation', e.target.value)}
-                placeholder="e.g. Fish Processing Worker"
-                className="input-field"
-              />
+                placeholder="e.g. Fish Processing Worker" className="input-field" />
             </div>
-
             <div>
               <Label text="Current / Last Employer Name" />
-              <input
-                type="text"
-                value={form.employer_name}
+              <input type="text" value={form.employer_name}
                 onChange={e => set('employer_name', e.target.value)}
-                placeholder="Company or organization name"
-                className="input-field"
-              />
+                placeholder="Company or organization name" className="input-field" />
             </div>
-
             <div>
               <Label text="Total Years of Experience" />
-              <Select
-                name="years_of_experience"
+              <SimpleSelect name="years_of_experience"
                 placeholder="-- Select Years of Experience --"
-                options={experienceOptions}
-              />
+                options={experienceOptions} />
             </div>
-
             <div className="sm:col-span-2">
               <Label text="Previous Employers (Optional)" />
-              <textarea
-                rows={3}
-                value={form.previous_employers}
+              <textarea rows={3} value={form.previous_employers}
                 onChange={e => set('previous_employers', e.target.value)}
                 placeholder="List your previous employers and roles&#10;Example: ABC Company — Warehouse Worker (2019–2021)&#10;XYZ Factory — Packer (2021–2023)"
-                className="input-field resize-none"
-              />
+                className="input-field resize-none" />
             </div>
-
           </div>
         </div>
 
-        {/* ── TIPS BOX ── */}
+        {/* ── TIPS ── */}
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
           <h3 className="text-sm font-semibold text-blue-800 mb-2">💡 Tips for Filling Your Profile</h3>
-          <ul className="text-xs text-blue-700 space-y-1">
-            <li>• Use the <strong>dropdown menus</strong> to select your country, gender, education level, and experience</li>
-            <li>• For <strong>dates</strong>, click the field and use the calendar picker that appears</li>
-            <li>• Your <strong>passport number</strong> is automatically converted to uppercase</li>
-            <li>• All fields with <span className="text-red-500 font-bold">*</span> are required</li>
-            <li>• Click <strong>Save Profile</strong> at the bottom when done</li>
+          <ul className="text-xs text-blue-700 space-y-1.5">
+            <li>🌍 <strong>Country & Nationality</strong> — Middle East countries appear first in the dropdown list</li>
+            <li>📅 <strong>Dates</strong> — Click the date field and a calendar will appear to pick the date</li>
+            <li>🔠 <strong>Passport Number</strong> — Automatically converts to uppercase as you type</li>
+            <li>📋 <strong>Dropdowns</strong> — All options are grouped by region for easy finding</li>
+            <li>💾 <strong>Save</strong> — Click the Save Profile button at the bottom when done</li>
           </ul>
         </div>
 
         {/* ── SAVE BUTTON ── */}
         <div className="flex items-center gap-4 pb-8">
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary px-10 py-3 text-base"
-          >
+          <button type="submit" disabled={loading} className="btn-primary px-10 py-3 text-base">
             {loading
               ? <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               : <><Save className="w-5 h-5" /> Save Profile</>
@@ -487,14 +622,11 @@ export default function ProfilePage() {
           </button>
           {completion === 100 && (
             <div className="flex items-center gap-2 text-green-600 font-medium">
-              <CheckCircle className="w-5 h-5" />
-              Profile 100% Complete!
+              <CheckCircle className="w-5 h-5" /> Profile 100% Complete!
             </div>
           )}
           {completion > 0 && completion < 100 && (
-            <p className="text-sm text-gray-500">
-              {completion}% complete — fill all fields to reach 100%
-            </p>
+            <p className="text-sm text-gray-500">{completion}% complete — fill all fields to reach 100%</p>
           )}
         </div>
 
