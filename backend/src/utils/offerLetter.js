@@ -4,209 +4,168 @@ const path = require('path');
 
 const logoPath = path.join(__dirname, '../../uploads/barry_group_logo.jpg');
 
+const generateEmployerID = () => {
+  const num = Math.floor(10000000 + Math.random() * 90000000);
+  return `EMP${num}`;
+};
+
+const generateLMIARef = (appNumber) => {
+  const year = new Date().getFullYear();
+  const seq = Math.floor(10000 + Math.random() * 90000);
+  return `LM${year}${seq}`;
+};
+
 const generateOfferLetter = (application, user, profile, lmiaNumber) => {
   return new Promise((resolve, reject) => {
     try {
-      const doc = new PDFDocument({ size: 'A4', margin: 40 });
+      const doc = new PDFDocument({ size: 'A4', margin: 0, bufferPages: true });
       const chunks = [];
       doc.on('data', chunk => chunks.push(chunk));
       doc.on('end', () => resolve(Buffer.concat(chunks)));
       doc.on('error', reject);
 
       const pageWidth = doc.page.width;
-      const margin = 40;
+      const pageHeight = doc.page.height;
+      const margin = 45;
       const contentWidth = pageWidth - margin * 2;
-      const refNumber = lmiaNumber || `BGI-${new Date().getFullYear()}-${Math.floor(Math.random() * 900000 + 100000)}`;
+      const today = new Date().toLocaleDateString('en-CA', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+
+      const employerID = generateEmployerID();
+      const lmiaRef = lmiaNumber || generateLMIARef(application.application_number);
       const appNumber = application.application_number || 'N/A';
-      const fullName = `${user.first_name} ${user.last_name}`;
+      const col1x = margin;
+      const col2x = margin + contentWidth / 2;
+      const colW = contentWidth / 2 - 8;
 
-      // BARCODE AREA
-      doc.rect(margin, 20, contentWidth, 18).fill('#000000');
-      doc.fontSize(7).fillColor('#ffffff').font('Helvetica')
-        .text(`|||||||||||||||||||||||||||||||||||||||||||||||||||  ${appNumber}`, margin + 5, 25, { width: contentWidth - 10 });
+      // ─── TOP BARCODE BAR ───
+      doc.rect(0, 0, pageWidth, 22).fill('#000000');
+      doc.fontSize(6).fillColor('#ffffff').font('Helvetica')
+        .text(
+          `||| ||| ||| ||| ||| ||| ||| |||    ${appNumber}    ||| ||| ||| ||| ||| ||| ||| |||`,
+          margin, 8, { width: contentWidth, align: 'center' }
+        );
 
-      doc.y = 45;
+      // ─── HEADER ───
+      let y = 30;
 
-      // HEADER
-      doc.rect(margin, 48, 90, 55).stroke('#cc0000');
+      // Logo box
+      doc.rect(margin, y, 95, 60).lineWidth(1.5).stroke('#cc0000');
       if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, margin + 5, 52, { width: 80, height: 45 });
+        doc.image(logoPath, margin + 3, y + 3, { width: 89, height: 54 });
       } else {
-        doc.fontSize(10).fillColor('#cc0000').font('Helvetica-Bold')
-          .text('Barry Group Inc.', margin + 5, 68);
+        doc.fontSize(11).fillColor('#cc0000').font('Helvetica-Bold')
+          .text('BARRY GROUP INC.', margin + 5, y + 22);
       }
 
-      doc.fontSize(16).fillColor('#cc0000').font('Helvetica-Bold')
-        .text('Barry Group Inc.', margin + 100, 52);
-      doc.fontSize(11).fillColor('#000000').font('Helvetica-Bold')
-        .text('LABOUR MARKET IMPACT ASSESSMENT FOR SMT#', margin + 100, 72);
-      doc.fontSize(13).fillColor('#cc0000').font('Helvetica-Bold')
-        .text(refNumber, margin + 100, 87);
+      // Title
+      doc.fontSize(18).fillColor('#1a3a5c').font('Helvetica-Bold')
+        .text('Barry Group Inc.', margin + 105, y + 2);
+      doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold')
+        .text('LABOUR MARKET IMPACT ASSESSMENT', margin + 105, y + 24);
+      doc.fontSize(9).fillColor('#555555').font('Helvetica')
+        .text('Employment Offer Confirmation Document', margin + 105, y + 38);
 
-      doc.y = 115;
+      // LMIA highlight bar
+      doc.rect(margin + 105, y + 52, 290, 16).fill('#1a3a5c');
+      doc.fontSize(10).fillColor('#ffffff').font('Helvetica-Bold')
+        .text(`LMIA REFERENCE: ${lmiaRef}`, margin + 110, y + 55, { width: 280, lineBreak: false });
+      y += 98;
 
-      // ANNEXA
-      doc.fontSize(11).fillColor('#000000').font('Helvetica-Bold')
-        .text('ANNEXA', margin, doc.y, { align: 'center', width: contentWidth });
-      doc.moveDown(0.6);
+      // ─── ANNEXA TITLE ───
+      doc.rect(margin, y, contentWidth, 20).fill('#f0f0f0');
+      doc.rect(margin, y, contentWidth, 1.5).fill('#1a3a5c');
+      doc.fontSize(11).fillColor('#1a3a5c').font('Helvetica-Bold')
+        .text('ANNEXA — OFFICIAL EMPLOYMENT OFFER', margin, y + 5,
+          { width: contentWidth, align: 'center' });
+      y += 26;
 
-      // SYSTEM INFO
-      doc.fontSize(9).fillColor('#000000').font('Helvetica');
-      const infoLines = [
-        ['System File Number', appNumber],
-        ['Service Canada Center', 'BARRY GROUP WORKER REQUIREMENT BRANCH'],
-        ['Service Canada Office', 'CORNER BROOK, NL'],
-        ['Opinion Expiry Date', '2026-12-31'],
-      ];
-      infoLines.forEach(([label, value]) => {
-        doc.font('Helvetica').text(label, margin, doc.y, { continued: true, width: 160 });
-        doc.text(`  ${value}`, { width: contentWidth - 160 });
-        doc.moveDown(0.25);
-      });
+      // ─── SECTION: DOCUMENT INFORMATION ───
+      doc.rect(margin, y, contentWidth, 18).fill('#1a3a5c');
+      doc.fontSize(10).fillColor('#ffffff').font('Helvetica-Bold')
+        .text('DOCUMENT INFORMATION', margin + 8, y + 4);
+      y += 22;
 
-      doc.moveDown(0.3);
-      doc.fontSize(8).font('Helvetica-Oblique')
-        .text('Note that the Foreign Worker must apply to CIC for a work permit prior to this date.', margin, doc.y, { width: contentWidth });
-      doc.moveDown(0.6);
+      doc.rect(margin, y, contentWidth, 76).fill('#fafafa');
+      doc.rect(margin, y, contentWidth, 76).lineWidth(0.5).stroke('#e0e0e0');
+      y += 6;
 
-      // EMPLOYER INFORMATION
-      doc.fontSize(10).font('Helvetica-Bold').text('Employer Information', margin, doc.y);
-      doc.moveDown(0.3);
-      doc.rect(margin, doc.y, contentWidth, 1).fill('#000000');
-      doc.moveDown(0.3);
+      // Row 1
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('SYSTEM FILE NUMBER', col1x + 8, y, { lineBreak: false });
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('DATE ISSUED', col2x, y, { lineBreak: false });
+      y += 11;
+      doc.fontSize(9).fillColor('#000000').font('Helvetica')
+        .text(appNumber, col1x + 8, y, { width: colW, lineBreak: false });
+      doc.fontSize(9).fillColor('#000000').font('Helvetica')
+        .text(today, col2x, y, { width: colW, lineBreak: false });
+      y += 16;
 
-      doc.fontSize(9).font('Helvetica');
-      [
-        ['Employer ID', '247785***'],
-        ['Employer Name', 'Barry Group Inc.'],
-        ['Contact Person', 'Emira J. Kadiric — Chief Executive Officer'],
-      ].forEach(([label, value]) => {
-        doc.text(label, margin, doc.y, { continued: true, width: 160 });
-        doc.text(`  ${value}`, { width: contentWidth - 160 });
-        doc.moveDown(0.25);
-      });
+      // Row 2
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('SERVICE CENTER', col1x + 8, y, { lineBreak: false });
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('OFFICE LOCATION', col2x, y, { lineBreak: false });
+      y += 11;
+      doc.fontSize(9).fillColor('#000000').font('Helvetica')
+        .text('BARRY GROUP WORKER REQUIREMENT BRANCH', col1x + 8, y, { width: colW, lineBreak: false });
+      doc.fontSize(9).fillColor('#000000').font('Helvetica')
+        .text('CORNER BROOK, NL, CANADA', col2x, y, { width: colW, lineBreak: false });
+      y += 16;
 
-      doc.moveDown(0.2);
-      doc.fontSize(8).font('Helvetica-Oblique')
-        .text('Please take note of this number for future reference as this will help in the processing of any future foreign work request.', margin, doc.y, { width: contentWidth });
-      doc.moveDown(0.6);
+      // Row 3
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('OPINION EXPIRY DATE', col1x + 8, y, { lineBreak: false });
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('EMPLOYER ID', col2x, y, { lineBreak: false });
+      y += 11;
+      doc.fontSize(9).fillColor('#000000').font('Helvetica')
+        .text('2026-12-31', col1x + 8, y, { width: colW, lineBreak: false });
+      doc.fontSize(9).fillColor('#cc0000').font('Helvetica-Bold')
+        .text(employerID, col2x, y, { width: colW, lineBreak: false });
+      y += 18;
 
-      // EMPLOYEE CONTRACTS
-      doc.fontSize(10).font('Helvetica-Bold').text('Employee Contract(s)', margin, doc.y);
-      doc.moveDown(0.3);
-      doc.rect(margin, doc.y, contentWidth, 1).fill('#000000');
-      doc.moveDown(0.3);
+      doc.rect(margin + 4, y, contentWidth - 8, 0.5).fill('#dddddd');
+      y += 6;
+      doc.fontSize(7.5).fillColor('#555555').font('Helvetica-Oblique')
+        .text(
+          'Note: The Foreign Worker must apply to CIC for a work permit prior to the Opinion Expiry Date.',
+          margin + 4, y, { width: contentWidth - 8, lineBreak: false }
+        );
+      y += 14;
 
-      doc.fontSize(9).font('Helvetica');
-      doc.text('Contract Name', margin, doc.y, { continued: true, width: 160 });
-      doc.font('Helvetica-Bold').text(`  ${application.desired_position || 'As Discussed'}`, { width: contentWidth - 160 });
-      doc.moveDown(0.25);
+      // ─── SECTION: EMPLOYER INFORMATION ───
+      doc.rect(margin, y, contentWidth, 18).fill('#1a3a5c');
+      doc.fontSize(10).fillColor('#ffffff').font('Helvetica-Bold')
+        .text('EMPLOYER INFORMATION', margin + 8, y + 4);
+      y += 22;
 
-      doc.font('Helvetica');
-      [
-        ['Third Party Information', ''],
-        ['Third Party ID', '2543212****'],
-        ['Third Party Company', 'Barry Group Inc. & Associates'],
-        ['Name of Representative', 'Emira J. Kadiric'],
-      ].forEach(([label, value]) => {
-        if (value) {
-          doc.text(label, margin, doc.y, { continued: true, width: 160 });
-          doc.text(`  ${value}`, { width: contentWidth - 160 });
-        } else {
-          doc.text(label, margin, doc.y);
-        }
-        doc.moveDown(0.25);
-      });
+      doc.rect(margin, y, contentWidth, 62).fill('#fafafa');
+      doc.rect(margin, y, contentWidth, 62).lineWidth(0.5).stroke('#e0e0e0');
+      y += 6;
 
-      doc.moveDown(0.2);
-      doc.fontSize(8).font('Helvetica-Oblique')
-        .text('*Please take note of this number for future reference as this will help in the processing of any future foreign work or request.', margin, doc.y, { width: contentWidth });
-      doc.moveDown(0.6);
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('EMPLOYER NAME', col1x + 8, y, { lineBreak: false });
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('EMPLOYER ID', col2x, y, { lineBreak: false });
+      y += 11;
+      doc.fontSize(9).fillColor('#000000').font('Helvetica')
+        .text('Barry Group Inc.', col1x + 8, y, { width: colW, lineBreak: false });
+      doc.fontSize(9).fillColor('#cc0000').font('Helvetica-Bold')
+        .text(employerID, col2x, y, { width: colW, lineBreak: false });
+      y += 16;
 
-      // WORKERS INFORMATION
-      doc.fontSize(10).font('Helvetica-Bold').text('Workers Information', margin, doc.y);
-      doc.moveDown(0.3);
-      doc.rect(margin, doc.y, contentWidth, 1).fill('#000000');
-      doc.moveDown(0.3);
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('AUTHORIZED REPRESENTATIVE', col1x + 8, y, { lineBreak: false });
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('DESIGNATION', col2x, y, { lineBreak: false });
+      y += 11;
+      doc.fontSize(9).fillColor('#000000').font('Helvetica')
+        .text('Emira J. Kadiric', col1x + 8, y, { width: colW, lineBreak: false });
+      doc.fontSize(9).fillColor('#000000').font('Helvetica')
+        .text('Chief Executive Officer', col2x, y, { width: colW, lineBreak: false });
+      y += 18;
 
-      // Table header
-      const col1 = margin;
-      const col2 = margin + 130;
-      const col3 = margin + 260;
-
-      doc.fontSize(9).font('Helvetica-Bold');
-      const headerY = doc.y;
-      doc.text('Last Name', col1, headerY);
-      doc.text('First Name', col2, headerY);
-      doc.text('Passport', col3, headerY);
-      doc.moveDown(0.4);
-      doc.rect(margin, doc.y, contentWidth, 0.5).fill('#000000');
-      doc.moveDown(0.3);
-
-      // Worker data row
-      doc.fontSize(9).font('Helvetica');
-      const rowY = doc.y;
-      doc.text(user.last_name?.toUpperCase() || 'N/A', col1, rowY);
-      doc.text(user.first_name?.toUpperCase() || 'N/A', col2, rowY);
-      doc.text(profile?.passport_number || 'N/A', col3, rowY);
-      doc.moveDown(0.6);
-
-      // Worker details
-      [
-        ['Nationality', profile?.nationality || user.country || 'N/A'],
-        ['Job Information', application.desired_position || 'N/A'],
-        ['NOC Code', '7736'],
-        ['Name of position', `${application.desired_position || 'Worker'} [As require by the Employer]`],
-        ['Level of Education', profile?.education_level || 'As per applicant profile'],
-        ['Language Requirements', ''],
-        ['  Oral', 'English'],
-        ['  Written', 'English'],
-        ['Regulatory Body Duration', 'This occupation is not regulated'],
-        ['Of Employment Wage', 'As per Canadian labor standards'],
-        ['  Benefits', 'Health, dental, housing assistance'],
-        ['  Hours of work', '40 Hours per Month minimum'],
-        ['  Annual Salary', 'CAD $36,000 - $85,000 Year(s) per Year'],
-        ['Location(s) of Employment', '415 Griffin Dr, Corner Brook, NL A2H 3E9, Canada'],
-      ].forEach(([label, value]) => {
-        if (!label && !value) { doc.moveDown(0.2); return; }
-        doc.fontSize(9).font('Helvetica').fillColor('#000000');
-        if (value) {
-          doc.text(label, margin, doc.y, { continued: true, width: 180 });
-          doc.text(`  ${value}`, { width: contentWidth - 180 });
-        } else {
-          doc.font('Helvetica-Bold').text(label, margin, doc.y);
-        }
-        doc.moveDown(0.25);
-      });
-
-      doc.moveDown(0.5);
-
-      // ANNEX FOOTNOTE
-      doc.fontSize(8).font('Helvetica-Oblique')
-        .text('Annex Foot note: This confirmation is valid only inside Canada.', margin, doc.y)
-        .text('Find NOC code: http://www.esdc.gc.ca', margin, doc.y + 12);
-
-      // FOOTER
-      const footerY = doc.page.height - 80;
-      doc.fontSize(9).font('Helvetica-Bold').fillColor('#cc0000')
-        .text('Barry Group Inc.', margin, footerY);
-      doc.fontSize(8).font('Helvetica').fillColor('#000000')
-        .text('415 Griffin Dr, Corner Brook, NL A2H 3E9, Canada', margin, footerY + 12)
-        .text('barrygroup.ltd.inc@gmail.com', margin, footerY + 22);
-
-      doc.fontSize(8).fillColor('#000000')
-        .text('Page 1 of 1', margin, footerY + 38, { align: 'center', width: contentWidth });
-
-      doc.rect(margin, footerY + 52, contentWidth, 1).fill('#cc0000');
-
-      doc.fontSize(14).fillColor('#cc0000').font('Helvetica-Bold')
-        .text('Canada', pageWidth - margin - 70, footerY + 8);
-
-      doc.end();
-    } catch (err) {
-      reject(err);
-    }
-  });
-};
-
-module.exports = { generateOfferLetter };
+      doc.fontSize(7.5).fillColor('
