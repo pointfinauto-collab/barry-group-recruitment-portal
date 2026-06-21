@@ -82,7 +82,10 @@ const generateAndSendOffer = async (req, res) => {
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
       secure: false,
-      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
     await transporter.sendMail({
@@ -97,13 +100,17 @@ const generateAndSendOffer = async (req, res) => {
           </div>
           <div style="background: #fff; padding: 30px; border: 1px solid #e0e0e0; border-radius: 0 0 8px 8px;">
             <h2 style="color: #0a2049;">Congratulations, ${data.first_name}!</h2>
-            <p>Your application <strong>${data.application_number}</strong> has been approved. Your Job Offer Letter is attached.</p>
+            <p>Your application <strong>${data.application_number}</strong> has been approved.</p>
+            <p>Your official Job Offer Letter is attached to this email as a PDF.</p>
             <div style="background: #f0f7ff; border-left: 4px solid #0a2049; padding: 15px; margin: 20px 0; border-radius: 4px;">
               <p style="margin: 0;"><strong>Position:</strong> ${data.desired_position}</p>
               ${data.lmia_number ? `<p style="margin: 8px 0 0; color: #27ae60;"><strong>LMIA Reference:</strong> ${data.lmia_number}</p>` : ''}
             </div>
             <p>Please reply within 7 business days to accept this offer.</p>
-            <p style="color: #999; font-size: 12px; margin-top: 20px;">Barry Group Inc. | 415 Griffin Dr, Corner Brook, NL A2H 3E9, Canada</p>
+            <p style="color: #999; font-size: 12px; margin-top: 20px;">
+              Barry Group Inc. | 415 Griffin Dr, Corner Brook, NL A2H 3E9, Canada<br>
+              barrygroup.ltd.inc@gmail.com
+            </p>
           </div>
         </div>
       `,
@@ -168,7 +175,11 @@ const previewOfferLetter = async (req, res) => {
     if (!result.rows.length) {
       return res.json({ hasLetter: false });
     }
-    res.json({ hasLetter: true, fileName: result.rows[0].file_name, uploadedAt: result.rows[0].uploaded_at });
+    res.json({
+      hasLetter: true,
+      fileName: result.rows[0].file_name,
+      uploadedAt: result.rows[0].uploaded_at,
+    });
   } catch (error) {
     res.status(500).json({ message: 'Failed to check offer letter' });
   }
