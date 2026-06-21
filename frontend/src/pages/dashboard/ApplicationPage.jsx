@@ -182,9 +182,7 @@ export default function ApplicationPage() {
 
         <div className="card bg-blue-50 border-blue-200">
           <p className="text-sm text-blue-700">
-            <strong>Note:</strong> LMIA reference numbers are internal recruitment tracking numbers used by Barry Group Inc. only. They do not constitute official government immigration decisions, work permits, or visas.
-          </p>
-        </div>
+            <strong>Note:</strong> LMIA reference numbers are given by canadian federal work skill to Barry Group Inc. They do not constitute official government immigration decisions and visas.
       </div>
     );
   }
