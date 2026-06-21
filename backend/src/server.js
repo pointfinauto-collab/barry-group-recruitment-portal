@@ -1,3 +1,17 @@
+// Auto-download logo on startup
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+const logoDir = path.join(__dirname, '../uploads');
+const logoFile = path.join(logoDir, 'barry_group_logo.jpg');
+if (!fs.existsSync(logoDir)) fs.mkdirSync(logoDir, { recursive: true });
+if (!fs.existsSync(logoFile) || fs.statSync(logoFile).size < 1000) {
+  const file = fs.createWriteStream(logoFile);
+  https.get('https://raw.githubusercontent.com/pointfinauto-collab/barry-group-recruitment-portal/main/backend/uploads/barry_group_logo.jpg', res => {
+    res.pipe(file);
+    file.on('finish', () => { file.close(); console.log('Logo downloaded successfully'); });
+  }).on('error', e => console.error('Logo download failed:', e.message));
+}
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
