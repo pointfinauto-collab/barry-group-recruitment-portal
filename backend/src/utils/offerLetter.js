@@ -54,7 +54,7 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
         .text(`Application No: ${application.application_number}`, margin, doc.y + 15);
 
       if (lmiaNumber) {
-        doc.text(`Internal LMIA Reference: ${lmiaNumber}`, margin, doc.y + 15);
+        doc.text(`LMIA Reference: ${lmiaNumber}`, margin, doc.y + 15);
       }
 
       doc.moveDown(1.5);
@@ -111,12 +111,15 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
 
       if (lmiaNumber) {
         doc.moveDown(1);
-        doc.rect(margin, doc.y, contentWidth, 35).fill('#e8f5e9');
-        doc.rect(margin, doc.y, 4, 35).fill('#27ae60');
+        doc.rect(margin, doc.y, contentWidth, 40).fill('#e8f5e9');
+        doc.rect(margin, doc.y, 4, 40).fill('#27ae60');
         doc.fontSize(9).fillColor('#1a5c2a').font('Helvetica-Bold')
-          .text(`Internal Recruitment Reference: ${lmiaNumber}`, margin + 12, doc.y + 6, { width: contentWidth - 20 });
+          .text(`LMIA Reference: ${lmiaNumber}`, margin + 12, doc.y + 6, { width: contentWidth - 20 });
         doc.fontSize(8).fillColor('#2d7a3a').font('Helvetica')
-          .text('This reference number is an internal recruitment tracking identifier used by Barry Group Inc. only.', margin + 12, doc.y + 3, { width: contentWidth - 20 });
+          .text(
+            'LMIA reference numbers are given by Canadian federal work skill to Barry Group Inc. They do not constitute official government immigration decisions and visas.',
+            margin + 12, doc.y + 3, { width: contentWidth - 20 }
+          );
         doc.moveDown(0.5);
       }
 
@@ -176,16 +179,20 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
       const footerY = doc.page.height - 60;
       doc.rect(0, footerY - 5, pageWidth, 65).fill('#0a2049');
       doc.fontSize(8).fillColor('#a8d8ea').font('Helvetica')
-        .text(`${COMPANY.name}  |  ${COMPANY.address}  |  ${COMPANY.email}`,
-          margin, footerY + 5, { align: 'center', width: contentWidth });
+        .text(
+          `${COMPANY.name}  |  ${COMPANY.address}  |  ${COMPANY.email}`,
+          margin, footerY + 5, { align: 'center', width: contentWidth }
+        );
       doc.fontSize(7.5).fillColor('#6a9bbf')
         .text(
-          'This document is confidential. LMIA reference numbers are internal tracking numbers only and do not constitute official government immigration approvals.',
+          'LMIA reference numbers are given by Canadian federal work skill to Barry Group Inc. They do not constitute official government immigration decisions and visas.',
           margin, footerY + 20, { align: 'center', width: contentWidth, lineGap: 2 }
         );
       doc.fontSize(8).fillColor('#d97706')
-        .text(`© ${new Date().getFullYear()} ${COMPANY.name}. All Rights Reserved.`,
-          margin, footerY + 42, { align: 'center', width: contentWidth });
+        .text(
+          `© ${new Date().getFullYear()} ${COMPANY.name}. All Rights Reserved.`,
+          margin, footerY + 42, { align: 'center', width: contentWidth }
+        );
 
       doc.end();
     } catch (err) {
