@@ -168,4 +168,184 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
         .text('Chief Executive Officer', col2x, y, { width: colW, lineBreak: false });
       y += 18;
 
-      doc.fontSize(7.5).fillColor('
+      doc.fontSize(7.5).fillColor('#555555').font('Helvetica-Oblique')
+        .text(
+          'Please retain the Employer ID for future reference. It will be required for all future foreign worker requests.',
+          margin + 4, y, { width: contentWidth - 8, lineBreak: false }
+        );
+      y += 14;
+
+      // ─── SECTION: CONTRACT INFORMATION ───
+      doc.rect(margin, y, contentWidth, 18).fill('#1a3a5c');
+      doc.fontSize(10).fillColor('#ffffff').font('Helvetica-Bold')
+        .text('CONTRACT INFORMATION', margin + 8, y + 4);
+      y += 22;
+
+      doc.rect(margin, y, contentWidth, 62).fill('#fafafa');
+      doc.rect(margin, y, contentWidth, 62).lineWidth(0.5).stroke('#e0e0e0');
+      y += 6;
+
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('CONTRACT NAME / POSITION', col1x + 8, y, { lineBreak: false });
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('THIRD PARTY ID', col2x, y, { lineBreak: false });
+      y += 11;
+      doc.fontSize(9).fillColor('#1a3a5c').font('Helvetica-Bold')
+        .text(application.desired_position || 'As Discussed', col1x + 8, y, { width: colW, lineBreak: false });
+      doc.fontSize(9).fillColor('#cc0000').font('Helvetica-Bold')
+        .text(`TP${Math.floor(1000000 + Math.random() * 9000000)}`, col2x, y, { width: colW, lineBreak: false });
+      y += 16;
+
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('THIRD PARTY COMPANY', col1x + 8, y, { lineBreak: false });
+      doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+        .text('NAME OF REPRESENTATIVE', col2x, y, { lineBreak: false });
+      y += 11;
+      doc.fontSize(9).fillColor('#000000').font('Helvetica')
+        .text('Barry Group Inc. & Associates', col1x + 8, y, { width: colW, lineBreak: false });
+      doc.fontSize(9).fillColor('#000000').font('Helvetica')
+        .text('Emira J. Kadiric', col2x, y, { width: colW, lineBreak: false });
+      y += 18;
+
+      doc.fontSize(7.5).fillColor('#555555').font('Helvetica-Oblique')
+        .text(
+          'Please retain this contract reference for all future foreign work or immigration-related requests.',
+          margin + 4, y, { width: contentWidth - 8, lineBreak: false }
+        );
+      y += 14;
+
+      // ─── SECTION: WORKER INFORMATION ───
+      doc.rect(margin, y, contentWidth, 18).fill('#1a3a5c');
+      doc.fontSize(10).fillColor('#ffffff').font('Helvetica-Bold')
+        .text('WORKER INFORMATION', margin + 8, y + 4);
+      y += 22;
+
+      // Worker table header
+      doc.rect(margin, y, contentWidth, 16).fill('#e8eef5');
+      doc.fontSize(8.5).fillColor('#1a3a5c').font('Helvetica-Bold')
+        .text('LAST NAME', margin + 8, y + 4, { width: 130, lineBreak: false });
+      doc.text('FIRST NAME', margin + 158, y + 4, { width: 130, lineBreak: false });
+      doc.text('PASSPORT NUMBER', margin + 308, y + 4, { width: 140, lineBreak: false });
+      y += 16;
+
+      // Worker data row
+      doc.rect(margin, y, contentWidth, 18).fill('#ffffff');
+      doc.rect(margin, y, contentWidth, 18).lineWidth(0.5).stroke('#e0e0e0');
+      doc.fontSize(9).fillColor('#000000').font('Helvetica-Bold')
+        .text(user.last_name?.toUpperCase() || 'N/A', margin + 8, y + 4,
+          { width: 130, lineBreak: false });
+      doc.text(user.first_name?.toUpperCase() || 'N/A', margin + 158, y + 4,
+        { width: 130, lineBreak: false });
+      doc.font('Helvetica')
+        .text(profile?.passport_number || 'N/A', margin + 308, y + 4,
+          { width: 140, lineBreak: false });
+      y += 22;
+
+      // Worker detail grid
+      doc.rect(margin, y, contentWidth, 90).fill('#fafafa');
+      doc.rect(margin, y, contentWidth, 90).lineWidth(0.5).stroke('#e0e0e0');
+      y += 6;
+
+      const wRows = [
+        ['NATIONALITY', profile?.nationality || user.country || 'N/A', 'EMAIL ADDRESS', user.email || 'N/A'],
+        ['PHONE NUMBER', user.phone || 'N/A', 'COUNTRY OF RESIDENCE', profile?.country || user.country || 'N/A'],
+        ['EDUCATION LEVEL', profile?.education_level || 'As per profile', 'YEARS OF EXPERIENCE', `${application.experience_years || 'N/A'} Year(s)`],
+        ['PREFERRED PROVINCE', application.preferred_province || 'Newfoundland and Labrador', 'NOC CODE', '7736'],
+      ];
+
+      wRows.forEach(([l1, v1, l2, v2]) => {
+        doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+          .text(l1, col1x + 8, y, { width: colW, lineBreak: false });
+        doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+          .text(l2, col2x, y, { width: colW, lineBreak: false });
+        y += 11;
+        doc.fontSize(9).fillColor('#000000').font('Helvetica')
+          .text(v1, col1x + 8, y, { width: colW - 8, lineBreak: false });
+        doc.fontSize(9).fillColor('#000000').font('Helvetica')
+          .text(v2, col2x, y, { width: colW, lineBreak: false });
+        y += 16;
+      });
+
+      y += 4;
+
+      // ─── SECTION: EMPLOYMENT TERMS ───
+      doc.rect(margin, y, contentWidth, 18).fill('#1a3a5c');
+      doc.fontSize(10).fillColor('#ffffff').font('Helvetica-Bold')
+        .text('EMPLOYMENT TERMS', margin + 8, y + 4);
+      y += 22;
+
+      doc.rect(margin, y, contentWidth, 90).fill('#fafafa');
+      doc.rect(margin, y, contentWidth, 90).lineWidth(0.5).stroke('#e0e0e0');
+      y += 6;
+
+      const tRows = [
+        ['POSITION TITLE', application.desired_position || 'N/A', 'EMPLOYMENT TYPE', 'Full-Time, Permanent'],
+        ['ANNUAL SALARY', 'CAD $36,000 — $85,000 per Year', 'HOURS OF WORK', '40 Hours per Week'],
+        ['BENEFITS', 'Health, Dental, Housing Assistance', 'PROBATION PERIOD', '3 Months'],
+        ['WORK LOCATION', '415 Griffin Dr, Corner Brook, NL', 'LANGUAGE', 'English (Oral & Written)'],
+      ];
+
+      tRows.forEach(([l1, v1, l2, v2]) => {
+        doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+          .text(l1, col1x + 8, y, { width: colW, lineBreak: false });
+        doc.fontSize(8).fillColor('#666666').font('Helvetica-Bold')
+          .text(l2, col2x, y, { width: colW, lineBreak: false });
+        y += 11;
+        doc.fontSize(9).fillColor('#000000').font('Helvetica')
+          .text(v1, col1x + 8, y, { width: colW - 8, lineBreak: false });
+        doc.fontSize(9).fillColor('#000000').font('Helvetica')
+          .text(v2, col2x, y, { width: colW, lineBreak: false });
+        y += 16;
+      });
+
+      y += 4;
+
+      // ─── LMIA REFERENCE BOX ───
+      doc.rect(margin, y, contentWidth, 34).fill('#e8f4e8');
+      doc.rect(margin, y, contentWidth, 34).lineWidth(0.5).stroke('#27ae60');
+      doc.rect(margin, y, 4, 34).fill('#27ae60');
+      doc.fontSize(9).fillColor('#1a5c2a').font('Helvetica-Bold')
+        .text('LMIA REFERENCE NUMBER:', margin + 12, y + 5, { lineBreak: false });
+      doc.fontSize(12).fillColor('#cc0000').font('Helvetica-Bold')
+        .text(`  ${lmiaRef}`);
+      doc.fontSize(7.5).fillColor('#2d7a3a').font('Helvetica-Oblique')
+        .text(
+          'LMIA reference numbers are given by Canadian federal work skill to Barry Group Inc. They do not constitute official government immigration decisions and visas.',
+          margin + 12, y + 20, { width: contentWidth - 20, lineBreak: false }
+        );
+      y += 40;
+
+      // ─── FOOTNOTE ───
+      doc.fontSize(7.5).fillColor('#555555').font('Helvetica-Oblique')
+        .text(
+          'Annex Foot note: This confirmation is valid only inside Canada.   Find NOC code: http://www.esdc.gc.ca',
+          margin, y + 4, { width: contentWidth, lineBreak: false }
+        );
+      y += 16;
+
+      // ─── FOOTER (fixed at bottom) ───
+      const footerY = pageHeight - 52;
+      doc.rect(0, footerY, pageWidth, 52).fill('#1a3a5c');
+
+      doc.fontSize(9).fillColor('#ffffff').font('Helvetica-Bold')
+        .text('Barry Group Inc.', margin, footerY + 6);
+      doc.fontSize(7.5).fillColor('#a8d8ea').font('Helvetica')
+        .text('415 Griffin Dr, Corner Brook, NL A2H 3E9, Canada', margin, footerY + 18);
+      doc.text('barrygroup.ltd.inc@gmail.com', margin, footerY + 28);
+
+      doc.fontSize(8).fillColor('#ffffff').font('Helvetica')
+        .text('Page 1 of 1', margin, footerY + 36,
+          { align: 'center', width: contentWidth, lineBreak: false });
+
+      doc.fontSize(16).fillColor('#cc0000').font('Helvetica-Bold')
+        .text('Canada', pageWidth - margin - 70, footerY + 10);
+      doc.rect(pageWidth - margin - 70, footerY + 30, 68, 2).fill('#cc0000');
+
+      doc.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+module.exports = { generateOfferLetter };
