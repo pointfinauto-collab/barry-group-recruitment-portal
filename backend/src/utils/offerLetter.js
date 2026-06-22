@@ -1,314 +1,343 @@
 const PDFDocument = require('pdfkit');
 
-// ── BARRY GROUP LOGO (embedded base64 — permanent, never disappears) ──
-const LOGO_BASE64 = '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wgARCADIAMgDASIAAhEBAxEB/8QAHAABAAMAAwEBAAAAAAAAAAAAAAUGBwMECAIB/8QAGgEBAAMBAQEAAAAAAAAAAAAAAAECAwQFBv/aAAwDAQACEAMQAAAB87jt5AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC1VUH0fLscE1/BFgAAAAAAABcsYh/QVZtXmK1ce1XvT1yOjapl3Z4nwMfXAAAAAAAH2fFg71k8/LsXyu/Xk+XumM5vb/o1Q0SBrHT5FEWqt8f1/CNpAAAAAAAbJjcnt5dj0Smalr5N+o1mi/k/qs9qVpgeXDPuofVbhIAAAAAAAC86ngP7bl9FSPmqMx7bPWrzQpoFwAniBanExNCcqY2fXsj1THWb8Yez/LEx1qz6TmZjzH+essYlm/e9kYlWcEkdXvFo8+833Uenx7ZWLD3ppUuSd+q71z5uPBNahKxVsz6+Xl7cDfjgkuz79RseIXvPTXv3DaobNqeAxEN48iX+n3r6s8iX+sJ9a5BsPkzPWTrfLYOvx+7Hdbr2w+OTpTdOrm5I3rX5o+2cMVGlhqlr6lufqIBh7HCK7yn7xatWcn6OtdVNSrl9uhjX3q/WIao6JVyKg9UljH+to9gMujrhcjFmoS5jPLswySOnIO1ASAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//EAC0QAAICAgECBQIFBQAAAAAAAAQFAgMBBgAHFBESExVAFjYQFyAxNSEiN2Bw/9oACAEBAAEFAv8Ag4CObgLn78lHMMj0yIvz+/w0x5Ktm/1Ubc1XSSgX3vq8ONYGsXyBj8PUxaC2+3hDRVaw39mZb9o1h9k0ctOWO4xWo/JLy/CATsCpZ1Rmw57NHKXTth9xREsp7K32IqFrS70Oz+BHy+YR5Qv5Tt5ZGay2d8e4d45ecwtNgWVTAnPe4IRX24lrLCuFteK5/AUqxPbhhPS2M2d08sNIqjp65lg1bfvQseF7sdfwgu4yfwR2ZQteqVcQnhohdM6ix2E3Yl2EL7TBKqM7zVRWZ8PJOANe6dVD7M36rKQl1OubSLuyp3QamdTslbL4ZZHcZCPIWkMWpje6Msxkwf42Jd+pIJWabdrYsyihwE0bfJ6vSTGJbNsXUQTXmypiq6iKjBJCHV6k6urvHtFtrTnWh5UmxBKTHgw+l2/jfRYNaOnOLGWBVehnYyY5uKFZixqnOHb24qoEvJ5bRYPKNU5Q4IRcrsodsA3EmBQ9N1sr7ukX3Ps2sa2ycp1oiNFr7YtFsWW2/Ss6oAVnazo0R5dPNr6hS2EHZGYaNOq6jXMtv6sqezfPJfSnTNj/AGJOQQX2ZR5rivqJIdmMm1mLlheW2Ao5gm43/jWx8gqgnZA9rkOIR3SL7n3fRnDrZOnOnsNdI1OQBu+ORNzK2LeASDNH1T/FvOqX2dykavqBq3Vht3r8DMWa+4S4ezXlttRSr+JUFYDYtgJhloR80WK/E0Gkawi19VioJ4HO4cEGw+/YCIXsEbYtKX+YD/h+3uWVIN1iwovfHZg4+zMhlAmxsQVXbQ412Ni6DGWWHFaOpu07WzLfcy+3hjlbYuqHc3dzVnNNXbQ4KfeHAwi0/g/iJbezJIhbZKQjO2dN9zQm6u2vFefwXrbmdzBZcruKDtDxyGvHzD4KHcbaAbctMa7K82ReuV3tJGpC19PBRbTSsxzjK9SSzxfRMe78PD+tNMiLj53+v+hdbEdgnerxTZPl3t+0vB2ArC1c259TA4JX7bHMqtkqqsNbAmgpWAqzAr4VgNdsw1dGNgr+pxH4o/NeOqGrHbJInTcD+3Z2AbDaGyherDZhZWuZU2sf9/8A/8QAMBEAAQQAAwQJAwUAAAAAAAAAAQACAxEEEiETMUFRBRAUIjBhcZHRICNQMlKhsfH/2gAIAQMBAT8B/A2LrwjomPB0KPdBtYCXtGec7iaHoPCe/KLR6Qw90XrpN882HEeHF5t/ohg3TsijcCzIr8HpDDS4qMNidS7N2zHBj9WxgX5lStzCwhluvDwsWxBJ3uNlZtfprqF1oncLWVUsoCpRRMxeaWYXqQByrRCaPDxuMJzajTlZpbabNsg0Zt/kAjinstrx3gR7E1aklLJGN/d8Wo8RiZY9qxo+VFIJWCRu4raNGhW2b5+xW2Z5+xRmaf8ACto1x0/pPdlGq78LiYdQeBvf7FOikeXOed+XgeBvkpMwk20XKiDfwnROlDnu/UarQ0KN8l92WRj3aVw15VyWHfO2ANZXrrp/GqgjEUTWN4ddKuulSpUqQaGih+J//8QAKxEAAQQBAgIJBQAAAAAAAAAAAQACAxEhEjEEQQUQEyIwMlBhgRQgUdHw/9oACAECAQE/AfS5pBDGZDyUHHt4gNdVXY+QtzakGmm+FI/inYijHyVL0d0nLW1DIpQPjiNzuAd+EeLgYSdYz7pk0cvkdfgxuDDlF/Zx2Oa6T4btor5t/ioI+DHFfTiK/c/pABooeFJ3sLTik1oHL7L6jWrKbzpasrUSUHErVsiSzAWkuPeWlu60A7ICwUWMBooijS0uuwuzJ3WhyDSE1paMpgsrB8ysDZDaigaxyWACAnBurKcbN9RVq1fVZVq1asrf0n//xABFEAACAQMBBAUGCQkJAQAAAAABAgMABBESBRMhMRQiQVFhIzJScYGREEBCYnKhscHRBhUkMzRzorLCIDVTcHST0vDx4v/aAAgBAQAGPwL/ACHley8pdQDVJbfKK+kvf6vhwwwe40kS82OK4fFLe5tDidG6vj4Uu3NjII7thmW39I9o+l9tXYuFHTETySvzHpe3lVhhQdotLpQKOsyY/HFX1xLjVArIPpdvxRVnAYBSyq3aaM+hY5kYaGUYPPlVtKTjZ+1AuvujmxwPtobT2UpF9nykaHGv5w8a6fezdM/KC58jb6m1bont9nfS2y/KIX19pNatJ09/xNXt4JB2iTzfrpem3w4cgSXxX5vZ9eEwHx29hpmvHCXNlmO5LeHyvdUm0nyLdPJ2qHsX0vbUML/qosavbzpteno+n2Y+IjVkr4V+j7Oi1+nMdZrrTWtv642rVHe2rjvVK4S2jetTVzEuNN0RDMLfgspHHGT20E/NM6qOAC8axPse6fx3fH31i3tLxR6MmMVrljSBPSkkUVpDrJ4r8RhJiSQuuWZhmjDbuyxq2Tg9nd91RWlqNV5ctu4x99DZtr+1QeWjl7Wl7/bypbk9UgeUXuI515GCWU+PVrESpbjwGTWqaV5W+cc/Et3FMyJ3Vc3L/R1H3mpvyj2j582YrKD5RQcyPX/3nUtpeIltOxzBp5MPR9dGYDGz9pHDdyTf/VXgYDpUcmg55gf9zUDIAJmU7zH1ff8AFIY/l3BJOPRq7ub9Ema2jRLe3biiLx5DwwPfVjfWqJa3hl0+S6uoYzn2cPfT7F2sQl466Vk/xO4j51TxTM0V0nAuhxq+d7aLOxdjzLH4pH6MaBBQntZnglHy0OK3t5cSXDjgC55UCDgjtFRx7Q/vC3GIrv8AxF9B/uP/AL/beOUZUQTP7ViZh9YrZpttTxnowvIieK7xVOoeB1ew+yoBNaG8ecGQ5kKhE1FQBjt6vbT7vVu89XVzxU2Rn9Fb+ZalsZLB5Wjx1lI7RmrmN7TTo6rK4Gpc8iDU9t57RyGPh24OK1rsu60/ujTRTRtFIvNHGCKN2lnO1qMkzCM6PfXTTayract8V6ppHuLKeBHOFMkZGo0B+bLrURqwIjnFNFKjRSIcMjjBFNcQWc8sC5zKkZKj21JeXX6iPgE9M1iFI4I+xFWpGlVLa7QZDLyemZUYqvnEDlW93bbv08cK8lE8n0RWmRGjPcwxTOEYovNgOA+ATiPz43jGscCGUqftq3vY49NwscaCPQcSKqheI7c6aAvNmxXCIxaM3CN5PJzjgRwz2GnkbGpzqOkYHuqb/St/MtTXG0drdFu2C6oukxpjhw4EVeD8mXi2jcHjqacNluzJH2V0jopurvLI0LDrFj9+a6QLPTFz3G7TH/KrfaTw7m7jKZzzAbmp9tDpYzagSmUfN1HNNYQ2aW9nqGnJ63Dl4Va7Ru4ekNARuU+eR/7VhNcRJbwEG3IU9jHhn24qO8UdS7Tj9JeB+rFW1kOrcXShD39brP8AhWzlXzTqY+v4MLNbse4SVtEyjUgCkr386it5HxEx8xeAAowWzGC3j6qiPhmmsbs7zUMxyHmpraanmCo+v4Nl/QP3VaiHqSvAuZO3HdXlZGnhPnpIc8KZU/VsNa+qpv8ASt/MtXN3aQK8DhcEyAclAq7uL7THvECCJWznxr8obiLQ8g07o/U5Htx76nWFrxI94d2YpNMQXs8KljDrPNCivI+eenzj9tXH7i4/q+C1/fR/yt8GyppCDLFKjS5+acOPaOPupLNT5O0TB+keJ+rFGwZgsyHXCT2+FaJI2VvEUtxL5IYIVW5twran0V++oZW80HBp+GYnOUfsIo383UgiBwT8o1tOMfrXw4HfQjjQs/dWz0DawqsuocuyrSWPr6IVDKOY8aWOMes91EJxWNRHmmns7pbSUpo1surh7jX99Q/7A/4UYp9tLuzwIRdGfctJcWu0EgmTk66vwowtteJAeBMUZVj7dNPsxNpxdDdWQoyE8Dz46abZ0O1IUs2VlMe7zwbnx0Zr9qh/i/CltbzakM0CkMF3WOI9SVDbWzpPPKdKovD7au5dpndHUZmj1A6AB9vD7Kmu5biNZJnMjA6uGfZX7VF/F+FaRtGIj5yk/wBNCf8AOEZlHaQx/pqWNLyEJJ5ww3H+Gv2qH+L8K0JfxaPRYMf6aG+v4mA+ThgP5aEkV7Ejjt634UVN/CoPPSrDP8NLAbuN4k4qmD+FWLRzbhhbr1jmtBv4VB56VI/prhIsn0c/DuoTFr7pZVjz6tRrdT7vX2iKVZMevSeFQmQY30YlXj2f9HwdJEQ0FN4FMihynpBM5x8G7hTW+lnx4AZP1Corq3bRNE2pTjNTm5uM2kBXeIoCjieHrqUQaPJLrdpJFQAZxzY+Ip5J4wqK6pkMDnUMjGOYwOfwRW8K65pGCKvLJo+FSNCECR41PLIsajPLixp4pBh0OkjOePw4pI0GWchRRhuGy8HkvVj+zbSucIkqsT4ZqWZ7srHJeu8sTbzDxHlhV4Htzqq3tx58UMQkkAPlgrnMXgO37aMcUy3OqfeJ5+Yl7uty9Q4cKW8e9aCYQLGbUREnUqaRg8tPCkka8MlqZ7d4LTdn9ECsC3hyBHV55qE3F/JHIJblRJhvJxvGAnLs1dnhVlB01t1Haum/CHqT6nxJ3ngfZmri2kvt5cGCNWvGjby7K7HuzyIGT3VtVZVS6WSDdxo4YLJ5RT2YI4DNBb6boQiuYXSOBW4RqCMKePfnjWtLsPfLbTQ7xBI3EshTDPx9Ktk7Radzu1g6RLx1EgYf11Dr2ozpFI7XUehz04H1+7rVcRy3UMMchUmC6tzLG+M93EGrCWK4NpbWV5JIsRjZiyNp4j3HnVsiX5S2iiVJNm7s4lYNxPdx5550txNtNry3LSGGMxMOi5XCnwxw4L66kUzr0jcKi3wMvpZILefy7ceFFor3oBW6Espjib9KTSo+48Dw61XE0E2+WWV380jHWOOfhx/yA//EACkQAQABAwMEAQMFAQAAAAAAAAERACExQVFhcYGRobEQQPAgwdHh8XD/2gAIAQEAAT8h/wCDuW/mN4w5YiZgSGGzQKAuulLWHkISsKvHFQlom32kZHYaTtPhx3p5AgWj8QfxM1A1PF1G0dHdE0lX14mJIymHl5ogbE2S3Vxjv9pgLdEcWjW0vagRD2E/ol7VhGo1PYmD50ov7Ny6BNBrudLyBZ7AFwuUM6CwZlQW6Dr/ACB7pAqRiNvs1rQ6Kcij1U6QZAdlio+FksIF4OGKvYEmIjlwiZ3GhOkt9bw3/ppTuXvKH0iu+bjHp9iwh1A4XvUAwWt/ZjtFRiQ0T+9D+cyfNfBT/FFxerxn0D/ajkkgQFFODTA8prVM5ZfdKznJw90igm/HsPsYlfkUrk7Yp+FFlJVS2bp6bvgLzWii4gbvs4W2ooVexfGRUudEQ/PxUhuv7tt6rmmDw6fZIUzTp02rOr6j2eKRhY2zlhpLXQohHZJ5JdOediK7K8xfA9zS2L2wO3V9KcVoNZJJ/GPtAKpqyuv6g70du9cGu8DrLLWHmhGGCaou/hWF+FEjsg3jXyUko5ZDFg8IavVKlF7/AGiiMW9C/llq1Jclo26UYO1xw2DTtSJnSJCNbILX9h7c5f1khm4MXl8FQnE6SyRm8P5Kc302dYrisi4RZrGRPGOa0xrFGQDVKQ2M0sYdXWo4JX8RZ8YfFSBu0Mks8VOcZIoL2b0gHob64aDoiMAZbItRNQQLEcQ60dqR3TASXaRnsM3yRFqkdkgvZHFY+voAlkEWq5NaFnZqFK4GIqF6LY4Y3qAY8om2XSkFG2BP3qVjDKqFc1ZCrLySHqOn0ipz15OjEwecVMLlkKhoAJ5uRag9ssymBlSLdJXdqNe2BmWbCx0PoFjkgtAEuSSA00CJWMWAi2lk70ZALnuQ6KcF8mtA71sWm0L8prGIAQV4CPDvQPyTgX0KnmpUkeCzpelowH1aDOlstOsUkTzzYSTsbtpqznNXS/B3rCDXuyO095T/AJdh/b9Oqc00wU7Nio71ptd4Ymx0p5azWLVSrkW3UpOatuqOv1LFCCI7NI2vPqjGIbh1RNY25wr8foFFLi7shZdyn4EjbTM4tbB1aVqBDDb4Rd+6m2ibp3WJhGb0ZgHW5y8KP0TWhRks1r6hgvsRRfLgnT+B7NNSbgd3z/CmQ1aMnTeiF0RX2G0V+J3pY1mOwkT7psUiTIvmhUW1lIRBvmkTyIublY/NabpmIGOu1EqSMpIPuaCLUlDSG2fFJ1Zcdju0xcMDWJn204aiGFIpDtGn0rs/HL4tmOStKNVvTecUQHvDESO0UqmgFJ4CleWssYi0kZZJda/zK8P45oIMg4WpyWUZPUhWHhOIpkYlsaNf+0yUxaowQ0whXECMKXloFBEhGB2GFB1cJqzHtX+ZXJdOBp0mimiAAdihwGAFeu3JPcUajKSeeHrdaPrpKPFhpfrSU9ygQm9cXkPrE8tjJkAglvgvU1mZwNYSRKdG9CKEBlLUH2pEoVJ0obKJbG4VDa2akMywF+99ke1Q6EWIPRqVDBZMEgvca4oeo2ZvSQGQ71DEQFSukiIwtSI3Iq6FcySwEtqBEvY8VCRo6UoRCWGDipGGiEBZuWahiYtvSJFs1LAztUURRysFXOswtkiLfpsygqYAWr77KUErgvFpiCr0sgBB5LgksKcIDcXscRNInJM9m9qtjRoe3Kg3RJbNFkTArcLYZhkaI9abCghiZhi6KzxGANY0kBvdli81K/Wr3RAgScqkYGhGVO4cjFFM3u8eAkJKW+WipWEyuUbYuYhNLVa8MRAEmtkjvzXPAuQkwvbbiJKEzUl7DMgTaAy3qwgiMRyQDaUxu04LDllGPrrDEVd05kF1A5IRC4VAdYfsjgs7g4NFSzMIBQIvLL2VJs0eGyUE+Yh3f8A//9oADAMBAAIAAwAAABAMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMU8EMMMMMMMMMN+2MMMMMMMMMEALTgMMMMMMMMNEn/UAMMMMMMMMOgokMMUk9HFWRYzK3xhZPMuTKbFi9opkHE4NtrbDiAr7pioMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMP/8QAJhEBAAICAQIGAgMAAAAAAAAAAREhADFBUXEQMGGBkbHB8EBQof/aAAgBAwEBPxD+fHhMp2X86+n48pQXOgj94zWha+mIq3sgg+VXvPlMzK7L/hLi4ETiE+zKcJaQ7LRv674jf20jLKiIjPp9YB0+TKFjLsn4uskigj9Cb7u+zgDx4NPNeVE+x7zR7EGNiFYgNeITWSN+NWwRCmJAVxRC5VR4ykDILAnTUqKu+NGQ1htTAIE3doLE9DJxISVtiCaFVnUFLOCCgNNIgOetcJgLNk7QvwwBBXSswbioNVMzzGaPAT3xPG+wv4yOAIH6azccv01hQA1+msSwPyPxhmyvoL9ZVwuUDC2iUO0Tco3gaJcYhJ0cmmnlmgjGMJWAAQVERQkvCI8Y1sVQoRCYLLMsG6Kxi8DaDmVKU2TREbl1BeoZhdR4EQ4s6PVaJQBdL6+/gA4jrkOuQdcbbch1yHXAJvIdch1yLYBwf1P/xAAmEQEAAgEDAgYDAQAAAAAAAAABABEhMUFRYXEQMIGhwdFAkbFQ/9oACAECAQE/EPz7Hwpq/KFewLjpBDlhfANXvY46iQQy54nVAZ7vkuCPJnUv4X/YFeq0UAeSj5hektSa710vSWj+wRhqpw2fsx5LxNyx1G0RMW83c2fJ26y55VqXtfRXD7QwNBx5S0tiiZlOSAlAQr0+vFazKOnh+qmPBBgGs8QQA0gVhMhG8rMeC/XMpwVhz2mC61p3YUFYb9i4KHb7qWKY7LaLY8ylFsupxiOK1nrPsCWNaEwhgm5X3AwDS9zcqUfX7fcFg0XxecTfi+3PeMT8M++IjrfwSaQV1UsbS25DBgqbFRRtFDpLcToS3J/yf//EACUQAQEAAgICAgMAAwEBAAAAAAERACExQVFhcYEQQJEgcKGx8f/aAAgBAQABPxD/AEO6XXKu0Jwo4ZqGVGBBiJEcMhRAFVzU51L5A4CG8nina+gq+jCTS2p5Tr9Sotiu3YPYqzxyOcgwew6yGgxLo0XYQgKhI4S3AAa0XW4KP9s2naDI3EDlgDEqgLADTTuUaim/1D/mgOsJdFLBa7UlQNEoaHW+EJ9YzT4Nn3AmDDLqlXpQBUVTktwYkuMVi9XyezgLC1nvCDR87MCkpEdvgeP0wlq5COEhT2uHnXyM87QfY784pvss0IKZ0L17ysbjtWR3yjho6MNrx6QQ/R7ew7AcY4wZeeAev/We7LX0GmuJJ6mMrLOr+gRGNNJ4EIfMfjCXO8t/kYV8cDlah/QtB/cakePpdFim+l/8FhZSOsMNQJFJpSNUNQ9SiAQ8YGASKAfQA/ubXVy09CJ93P8AuoEe3cJRaKu/A0fJr3+iQAvJKgpoToTjzll7NyAauyvLziYjVJbzOql05dDkzGTgPoeuBXR5zh1zxQeneGig7iYTwFL+KReCHpokv6/wMe9dTDwFgejX6VFYNRE8tD/Ey1F0P2lX3XAwMRGAU8muAcsDPMA9DaG4NaCsQDcgwhGq3xQ+zwAwp64CNBrYDU5jwYFqkgQAx26V2g8fqAUdGB0sfKd3l4wlQD7YlghEo7VaYwEe2AGrrgd6V1Fh/DHa6YwuMU0gLfOv8Aowl8q2Ohn40j/Ktv6jHIjPB39v3GH+9VVcpOV2NHsyjltDz9I3cBvAzWeBNETYj3ixFgNj2w3tXyEJ/nHaN1ZUA3S5wyOnE40GRTjt09E0ZICpBB43MCtjRSdhUoWl6OizVsy5IEJLlG7vZ7gLoJ9Y/g9aUN5XAkRYic2I2em6A8uh7w5LgGeQBHwZZlgY+BCPyYov4eqMYCEW6jjlrm8SklOqUuClysxVgICgbwbnt7bBmhdbDFv0Ap5GFHhzySGX8gI210c4Ms6zOmfRT/4OXEiLh0FeX2T4ylMg9uWLtrmzmwQPIirlqIlRl5wkWAJL0TF+8Ea7F08KEM1j2iweQTZkF47kdECV7/DVYp7mo0WiKGwTTez7kblqIh4NBAUGpyFVPkaAchtA6EcoQa6ADgPwi5eHAq3dSHdppyhJwsmQLKsDTRbi5kZpgACysVNFZBeiYXO3cdcMaZpnjQQtiPDCVmu2ArOaG0UIbcNHkqT0SBSaEcC85pV+02oBJvYxUHAQO++6oitwH2Zpk4xCQPtP2uK5mXoX9gHTBte03hIl9/jFLgodwKwC45ckJqDehAPpcS2CwIyA8BBbj3voVSMhai8/O64zBbooexILvek2OiCi3wIf/Pz+A01hKNL2SU2/DCtHsC2uRGXXD3nH+pbs6+BAeg/CJzJ7o0hpENmPh40rbbEDsXx9rqPfSVvumnk5TYqJN/utEN273RcM0og01GVOodJLr/Bt0CRBojEcR7e8GM8ag940mUBpNH0PU4K9EaI1t7VfdwkXtp/TgeymU84pQVruKa+p5/CBIKvkM/pt9YQ8i6rADVBierwmGZunYDXwXHcM5BMjgQO9w+mbs5mu0XwHa8ZuXe0lA+Ij4xSoAFMVBumF6+WFDx2t/adQ/vBgs3yUVofSH1hnyBrZBGtY45/ClHqg02lHoaRY42AFhF0o1Q0oRNI5HB8gTeuvt4ITMKkOpPK1dTPbHxUAB2ii6mvwVHTNeUWxBRZvLZ9z1FBDWcrgbVM8yAntbLpyJhe/gaVbBCwjwGO3YQKPkyEOkBf2V+1x+jDgREQBF0Ga2wviuSklcJ+CpnST0p0IehmUAasV5gL7d5Qwgmo8iMp6dYcc4SD3R9XI09re+kPwMbxivRVsdy++EmsGWSK/80CfUwDoKkD0br8H5Rx5EDQELojK8Y8D6IGrQRCKHpkSeTU0Thuh3rIlEpSnJgA4O6VMDiWkFsFxIVTgznPmXQ1Qg4Na6FYYDoA0Oygj3pMo6qfMpzlIkQMMKH4KnMnTC1RiZ9ZvO4QFfbIpFLEx4dJoFUAqhVA7cYOJHysxRQ7H2fA+GtMg4G0OoQgIwTkUzuG001cEpAKU5M95Zpu/GGuVJgmo9FTeEsMzpeiiII77/wAXMHMqMQ2wHRhfL0lwIOAoDdqi/hMPjbqHxoxQxTGBCuYJHGM6ggRFl5yTaCviBICt3ih1upQYnxCTNf4eAWWBSe4AhkbMDJ1CQIQTjUxK8CKh2o6OtrIGhKGehELuArYz9Q5c/qbFbAwMdLqUWAEAgqdAWlU9hPs9KlG5U5ZBbe9YVRbvF3pc2DcjUEa+JiauW9STgtAVSHMNSHhtdayCQoFtwZGk73nSgojQLZESvAGo1AhTYUSOApJZp6FVtUtaAWSU8tvAvitasRP9Af/Z';
+// ── NEW BARRY GROUP LOGO (horizontal blue logo) ──
+const LOGO_BASE64 = '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';
 
 // ── NUMBER GENERATORS ──
 const generateLMIANumber = () => {
+  // 7 digits starting with 8 — unique every time
   const digits = Math.floor(100000 + Math.random() * 900000);
   return `8${digits}`;
 };
 
-const generateEmployerID = () => {
-  return `EMP${Math.floor(10000000 + Math.random() * 90000000)}`;
-};
-
-const generateThirdPartyID = () => {
-  return `TP${Math.floor(1000000 + Math.random() * 9000000)}`;
-};
-
-const generateAppRef = (appNumber) => {
-  if (appNumber && appNumber !== 'N/A') return appNumber;
-  return `BGI-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
-};
+const generateEmployerID = () => `EMP${Math.floor(10000000 + Math.random() * 90000000)}`;
+const generateThirdPartyID = () => `TP${Math.floor(1000000 + Math.random() * 9000000)}`;
+const generateAppRef = (appNumber) => appNumber && appNumber !== 'N/A'
+  ? appNumber
+  : `BGI-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
 
 const generateOfferLetter = (application, user, profile, lmiaNumber) => {
   return new Promise((resolve, reject) => {
     try {
-      const doc = new PDFDocument({ size: 'A4', margin: 50, bufferPages: true });
+      const doc = new PDFDocument({ size: 'A4', margin: 45, bufferPages: true });
       const chunks = [];
       doc.on('data', chunk => chunks.push(chunk));
       doc.on('end', () => resolve(Buffer.concat(chunks)));
       doc.on('error', reject);
 
       const pageWidth = doc.page.width;
-      const margin = 50;
+      const margin = 45;
       const contentWidth = pageWidth - margin * 2;
       const today = new Date().toLocaleDateString('en-CA', {
         year: 'numeric', month: 'long', day: 'numeric'
       });
 
+      // Generate unique random numbers for each letter
       const employerID = generateEmployerID();
       const lmiaRef = lmiaNumber || generateLMIANumber();
       const thirdPartyID = generateThirdPartyID();
       const appRef = generateAppRef(application.application_number);
       const fullName = `${user.first_name} ${user.last_name}`;
-
-      // Convert base64 to buffer for logo
       const logoBuffer = Buffer.from(LOGO_BASE64, 'base64');
 
       // ── COLORS ──
-      const DARK_BLUE = '#1a3a5c';
-      const LIGHT_BLUE = '#e8f0f8';
-      const GRAY = '#555555';
-      const LIGHT_GRAY = '#f5f7fa';
-      const BORDER = '#d0dce8';
+      const DARK_BLUE = '#1a3575';
+      const MID_BLUE = '#2d5fa8';
+      const LIGHT_BLUE = '#eef2fa';
+      const GRAY = '#444444';
+      const LIGHT_GRAY = '#f6f7fa';
+      const BORDER = '#c8d4e8';
       const GREEN = '#27ae60';
-      const GOLD = '#d97706';
-      const RED = '#cc0000';
+      const GOLD = '#d4a017';
+      const RED = '#c0392b';
 
-      // ── TOP BAR ──
-      doc.rect(0, 0, pageWidth, 8).fill(DARK_BLUE);
+      // ════════════════════════════════════
+      // PAGE 1
+      // ════════════════════════════════════
 
-      // ── LOGO (embedded from base64) ──
+      // ── TOP BLUE BAR ──
+      doc.rect(0, 0, pageWidth, 6).fill(DARK_BLUE);
+
+      // ── LOGO (wide horizontal logo) ──
       try {
-        doc.image(logoBuffer, margin, 16, { width: 90, height: 82, fit: [90, 82] });
+        doc.image(logoBuffer, margin, 14, { width: 220, height: 50 });
       } catch (e) {
-        // fallback text if logo fails
-        doc.fontSize(14).fillColor(RED).font('Helvetica-Bold')
-          .text('BARRY GROUP', margin, 35)
-          .fontSize(10).text('INC.', margin, 52);
+        doc.fontSize(18).fillColor(DARK_BLUE).font('Helvetica-Bold')
+          .text('BARRY GROUP INC.', margin, 24);
       }
 
-      // ── COMPANY HEADER RIGHT ──
-      doc.fontSize(17).fillColor(DARK_BLUE).font('Helvetica-Bold')
-        .text('Barry Group Inc.', margin + 105, 18, { width: contentWidth - 105, align: 'right' });
+      // ── COMPANY INFO (right side) ──
       doc.fontSize(8).fillColor(GRAY).font('Helvetica')
-        .text('415 Griffin Dr, Corner Brook, NL A2H 3E9, Canada', margin + 105, 40, { width: contentWidth - 105, align: 'right' })
-        .text('barrygroup.ltd.inc@gmail.com  |  www.barrygroup.ca', margin + 105, 52, { width: contentWidth - 105, align: 'right' })
-        .text('Take Control. Plan to Succeed.', margin + 105, 64, { width: contentWidth - 105, align: 'right' })
-        .text(`Date of Issue: ${today}`, margin + 105, 78, { width: contentWidth - 105, align: 'right' });
+        .text('415 Griffin Dr, Corner Brook, NL A2H 3E9, Canada', margin, 18, { width: contentWidth, align: 'right' })
+        .text('barrygroup.ltd.inc@gmail.com  |  www.barrygroup.ca', margin, 29, { width: contentWidth, align: 'right' })
+        .text(`Date: ${today}`, margin, 40, { width: contentWidth, align: 'right' });
 
-      // ── DIVIDER LINES ──
-      doc.rect(margin, 105, contentWidth, 2).fill(DARK_BLUE);
-      doc.rect(margin, 107, contentWidth, 1.5).fill(GOLD);
+      // ── DIVIDER ──
+      doc.rect(margin, 70, contentWidth, 2).fill(DARK_BLUE);
+      doc.rect(margin, 72, contentWidth, 1).fill(GOLD);
 
-      // ── TITLE BLOCK ──
-      doc.rect(margin, 117, contentWidth, 30).fill(DARK_BLUE);
-      doc.fontSize(13).fillColor('#ffffff').font('Helvetica-Bold')
-        .text('EMPLOYMENT OFFER LETTER', margin, 126, { width: contentWidth, align: 'center' });
+      // ── TITLE ──
+      doc.rect(margin, 80, contentWidth, 28).fill(DARK_BLUE);
+      doc.fontSize(14).fillColor('#ffffff').font('Helvetica-Bold')
+        .text('EMPLOYMENT OFFER LETTER', margin, 90, { width: contentWidth, align: 'center' });
 
-      // ── REFERENCE BAR ──
-      doc.rect(margin, 147, contentWidth, 22).fill(LIGHT_BLUE);
-      doc.rect(margin, 147, contentWidth, 22).lineWidth(0.5).stroke(BORDER);
+      // ── REFERENCE BAR (3 columns) ──
+      doc.rect(margin, 108, contentWidth, 22).fill(LIGHT_BLUE);
+      doc.rect(margin, 108, contentWidth, 22).lineWidth(0.5).stroke(BORDER);
 
       const refW = contentWidth / 3;
-      doc.fontSize(7).fillColor('#888888').font('Helvetica-Bold')
-        .text('APPLICATION REFERENCE', margin + 6, 150, { width: refW - 6, lineBreak: false });
-      doc.text('EMPLOYER ID', margin + refW + 6, 150, { width: refW - 6, lineBreak: false });
-      doc.text('LMIA REFERENCE NUMBER', margin + refW * 2 + 6, 150, { width: refW - 6, lineBreak: false });
+      doc.fontSize(6.5).fillColor('#777777').font('Helvetica-Bold')
+        .text('APPLICATION REF', margin + 6, 111, { lineBreak: false })
+        .text('EMPLOYER ID', margin + refW + 6, 111, { lineBreak: false })
+        .text('LMIA NUMBER', margin + refW * 2 + 6, 111, { lineBreak: false });
 
       doc.fontSize(8.5).fillColor(DARK_BLUE).font('Helvetica-Bold')
-        .text(appRef, margin + 6, 159, { width: refW - 6, lineBreak: false });
-      doc.text(employerID, margin + refW + 6, 159, { width: refW - 6, lineBreak: false });
+        .text(appRef, margin + 6, 120, { lineBreak: false });
+      doc.text(employerID, margin + refW + 6, 120, { lineBreak: false });
       doc.fontSize(9).fillColor(RED).font('Helvetica-Bold')
-        .text(lmiaRef, margin + refW * 2 + 6, 159, { width: refW - 6, lineBreak: false });
+        .text(lmiaRef, margin + refW * 2 + 6, 120, { lineBreak: false });
 
-      let y = 179;
-
-      // ── LMIA NOTICE BOX ──
-      doc.rect(margin, y, contentWidth, 40).fill('#fff8e1');
-      doc.rect(margin, y, 4, 40).fill(GOLD);
-      doc.rect(margin, y, contentWidth, 40).lineWidth(0.5).stroke('#f0c040');
-
-      doc.fontSize(8).fillColor('#7d5a00').font('Helvetica-Bold')
-        .text('ABOUT THE LMIA REFERENCE NUMBER:', margin + 10, y + 5, { lineBreak: false });
-      doc.fontSize(7.5).fillColor('#5a4000').font('Helvetica')
-        .text(
-          `This LMIA confirmation number (${lmiaRef}) is a 7-digit unique identifier beginning with 8, generated by Employment and Social Development Canada (ESDC) / Service Canada. It is clearly printed at the top of each page of the official LMIA decision letter and confirms a positive Labour Market Impact Assessment has been issued for this position.`,
-          margin + 10, y + 17, { width: contentWidth - 20 }
-        );
-      y += 46;
+      let y = 140;
 
       // ── HELPER FUNCTIONS ──
       const sectionHeader = (num, title) => {
-        doc.rect(margin, y, contentWidth, 20).fill(DARK_BLUE);
-        doc.fontSize(9.5).fillColor('#ffffff').font('Helvetica-Bold')
-          .text(`${num}.  ${title}`, margin + 8, y + 5, { lineBreak: false });
-        y += 24;
+        doc.rect(margin, y, contentWidth, 18).fill(DARK_BLUE);
+        doc.fontSize(9).fillColor('#ffffff').font('Helvetica-Bold')
+          .text(`${num}.  ${title}`, margin + 8, y + 4, { lineBreak: false });
+        y += 21;
       };
-
-      const twoColRow = (l1, v1, l2, v2, h = 36) => {
-        const half = contentWidth / 2 - 4;
-        doc.rect(margin, y, contentWidth, h).fill(LIGHT_GRAY);
-        doc.rect(margin, y, contentWidth, h).lineWidth(0.5).stroke(BORDER);
-        doc.rect(margin + half + 4, y, 0.5, h).fill(BORDER);
-
-        doc.fontSize(7.5).fillColor('#888888').font('Helvetica-Bold')
-          .text(l1.toUpperCase(), margin + 8, y + 4, { width: half - 8, lineBreak: false });
-        doc.fontSize(9).fillColor('#111111').font('Helvetica')
-          .text(v1 || 'N/A', margin + 8, y + 15, { width: half - 8, lineBreak: false });
-
-        doc.fontSize(7.5).fillColor('#888888').font('Helvetica-Bold')
-          .text(l2.toUpperCase(), margin + half + 12, y + 4, { width: half - 8, lineBreak: false });
-        doc.fontSize(9).fillColor('#111111').font('Helvetica')
-          .text(v2 || 'N/A', margin + half + 12, y + 15, { width: half - 8, lineBreak: false });
-        y += h + 2;
-      };
-
-      const oneColRow = (label, value, h = 28) => {
-        doc.rect(margin, y, contentWidth, h).fill(LIGHT_GRAY);
-        doc.rect(margin, y, contentWidth, h).lineWidth(0.5).stroke(BORDER);
-        doc.fontSize(7.5).fillColor('#888888').font('Helvetica-Bold')
-          .text(label.toUpperCase(), margin + 8, y + 4, { lineBreak: false });
-        doc.fontSize(9).fillColor('#111111').font('Helvetica')
-          .text(value || 'N/A', margin + 8, y + 15, { width: contentWidth - 16, lineBreak: false });
-        y += h + 2;
-      };
-
-      // ── 1. EMPLOYEE INFORMATION ──
-      sectionHeader(1, 'EMPLOYEE INFORMATION');
-      twoColRow('Full Legal Name', fullName, 'Passport Number', profile?.passport_number || 'N/A');
-      twoColRow('Email Address', user.email || 'N/A', 'Phone Number', user.phone || 'N/A');
-      twoColRow('Nationality', profile?.nationality || 'N/A', 'Country of Residence', profile?.country || user.country || 'N/A');
-      oneColRow('Current Residential Address',
-        profile?.address
-          ? `${profile.address}, ${profile.city || ''}, ${profile.country || ''}`.replace(/,\s*,/g, ',').trim()
-          : 'N/A'
-      );
-      y += 4;
-
-      // ── 2. EMPLOYMENT OFFER DETAILS ──
-      sectionHeader(2, 'EMPLOYMENT OFFER DETAILS');
-      twoColRow('Job Title / Position', application.desired_position || 'N/A', 'NOC Code', '7736');
-      twoColRow('Department', application.department || 'To Be Assigned', 'Employment Type', 'Full-Time, Permanent');
-      twoColRow('Work Location', `${application.preferred_province || 'Newfoundland and Labrador'}, Canada`, 'Expected Start Date', 'To Be Confirmed');
-      twoColRow('Reporting Supervisor', 'Emira J. Kadiric, CEO', 'Work Schedule', 'Monday – Friday');
-      twoColRow('Hours Per Week', '40 Hours', 'Probation Period', '3 Months');
-      y += 4;
-
-      // ── 3. COMPENSATION AND BENEFITS ──
-      sectionHeader(3, 'COMPENSATION AND BENEFITS');
-      twoColRow('Annual Salary', 'CAD $36,000 – $85,000 per Year', 'Overtime Rate', '1.5x Regular Rate (after 40 hrs/week)');
-      twoColRow('Vacation Entitlement', '2 Weeks Paid (10 Business Days)', 'Health Benefits', 'Comprehensive Health Coverage');
-      twoColRow('Dental Benefits', 'Full Dental Coverage Included', 'Pension / Retirement', 'Company Pension Plan — After 1 Year');
-      oneColRow('Additional Benefits', 'Housing Assistance, Relocation Support, Professional Development, Safety Training, Uniform Allowance');
-      y += 4;
-
-      // ── 4. JOB DUTIES ──
-      sectionHeader(4, 'JOB DUTIES & RESPONSIBILITIES');
-      const duties = [
-        '• Perform assigned duties in accordance with company standards and Canadian occupational health and safety regulations.',
-        '• Maintain high quality and productivity standards on the production floor or assigned department.',
-        '• Follow all workplace safety protocols and wear required personal protective equipment at all times.',
-        '• Report to the designated supervisor and communicate any workplace concerns promptly.',
-        '• Participate in mandatory training programs, safety drills, and performance reviews.',
-        '• Comply with all company policies, codes of conduct, and provincial employment standards.',
-      ];
-      const dutiesH = duties.length * 15 + 14;
-      doc.rect(margin, y, contentWidth, dutiesH).fill(LIGHT_GRAY);
-      doc.rect(margin, y, contentWidth, dutiesH).lineWidth(0.5).stroke(BORDER);
-      y += 7;
-      duties.forEach(d => {
-        doc.fontSize(8.5).fillColor('#111111').font('Helvetica')
-          .text(d, margin + 8, y, { width: contentWidth - 16, lineBreak: false });
-        y += 15;
-      });
-      y += 8;
-
-      // ── 5. LMIA INFORMATION ──
-      sectionHeader(5, 'LMIA INFORMATION (LABOUR MARKET IMPACT ASSESSMENT)');
-      doc.rect(margin, y, contentWidth, 72).fill('#e8f4e8');
-      doc.rect(margin, y, contentWidth, 72).lineWidth(0.5).stroke(GREEN);
-      doc.rect(margin, y, 4, 72).fill(GREEN);
 
       const half = contentWidth / 2 - 4;
 
-      doc.fontSize(7.5).fillColor('#1a5c2a').font('Helvetica-Bold')
+      const twoCol = (l1, v1, l2, v2, h = 32) => {
+        doc.rect(margin, y, contentWidth, h).fill(LIGHT_GRAY);
+        doc.rect(margin, y, contentWidth, h).lineWidth(0.4).stroke(BORDER);
+        doc.rect(margin + half + 4, y, 0.4, h).fill(BORDER);
+
+        doc.fontSize(6.5).fillColor('#888888').font('Helvetica-Bold')
+          .text(l1.toUpperCase(), margin + 6, y + 3, { width: half - 6, lineBreak: false });
+        doc.fontSize(8.5).fillColor('#111111').font('Helvetica')
+          .text(v1 || 'N/A', margin + 6, y + 13, { width: half - 6, lineBreak: false });
+
+        doc.fontSize(6.5).fillColor('#888888').font('Helvetica-Bold')
+          .text(l2.toUpperCase(), margin + half + 10, y + 3, { width: half - 6, lineBreak: false });
+        doc.fontSize(8.5).fillColor('#111111').font('Helvetica')
+          .text(v2 || 'N/A', margin + half + 10, y + 13, { width: half - 6, lineBreak: false });
+
+        y += h + 1;
+      };
+
+      const oneCol = (label, value, h = 26) => {
+        doc.rect(margin, y, contentWidth, h).fill(LIGHT_GRAY);
+        doc.rect(margin, y, contentWidth, h).lineWidth(0.4).stroke(BORDER);
+        doc.fontSize(6.5).fillColor('#888888').font('Helvetica-Bold')
+          .text(label.toUpperCase(), margin + 6, y + 3, { lineBreak: false });
+        doc.fontSize(8.5).fillColor('#111111').font('Helvetica')
+          .text(value || 'N/A', margin + 6, y + 13, { width: contentWidth - 12, lineBreak: false });
+        y += h + 1;
+      };
+
+      // ── SECTION 1: EMPLOYEE INFO ──
+      sectionHeader(1, 'EMPLOYEE INFORMATION');
+      twoCol('Full Legal Name', fullName, 'Passport Number', profile?.passport_number || 'N/A');
+      twoCol('Email Address', user.email || 'N/A', 'Phone Number', user.phone || 'N/A');
+      twoCol('Nationality', profile?.nationality || 'N/A', 'Country of Residence', profile?.country || user.country || 'N/A');
+      oneCol('Residential Address',
+        profile?.address ? `${profile.address}, ${profile.city || ''}, ${profile.country || ''}`.replace(/,\s*,/g, ',').trim() : 'N/A'
+      );
+      y += 5;
+
+      // ── SECTION 2: EMPLOYMENT DETAILS ──
+      sectionHeader(2, 'EMPLOYMENT OFFER DETAILS');
+      twoCol('Job Title / Position', application.desired_position || 'N/A', 'NOC Code', '7736');
+      twoCol('Department', application.department || 'To Be Assigned', 'Employment Type', 'Full-Time, Permanent');
+      twoCol('Work Location', `${application.preferred_province || 'Newfoundland and Labrador'}, Canada`, 'Expected Start Date', 'To Be Confirmed');
+      twoCol('Reporting Supervisor', 'Emira J. Kadiric, CEO', 'Work Schedule', 'Monday – Friday');
+      twoCol('Hours Per Week', '40 Hours / Week', 'Probation Period', '3 Months');
+      y += 5;
+
+      // ── SECTION 3: COMPENSATION ──
+      sectionHeader(3, 'COMPENSATION AND BENEFITS');
+      twoCol('Annual Salary', 'CAD $36,000 – $85,000 per Year', 'Overtime Rate', '1.5x after 40 hrs/week');
+      twoCol('Vacation', '2 Weeks Paid (10 Business Days)', 'Health Benefits', 'Comprehensive Coverage');
+      twoCol('Dental', 'Full Dental Coverage', 'Pension', 'Company Plan — After 1 Year');
+      oneCol('Additional Benefits', 'Housing Assistance, Relocation Support, Professional Development, Safety Training, Uniform Allowance');
+      y += 5;
+
+      // ── SECTION 4: JOB DUTIES ──
+      sectionHeader(4, 'JOB DUTIES AND RESPONSIBILITIES');
+      const duties = [
+        '• Perform all assigned duties in accordance with company standards and Canadian occupational health and safety regulations.',
+        '• Maintain high quality and productivity standards on the production floor or assigned department.',
+        '• Follow all workplace safety protocols and wear required personal protective equipment at all times.',
+        '• Report to the designated supervisor and communicate any workplace concerns promptly.',
+        '• Participate in all mandatory training programs, safety drills, and performance reviews.',
+        '• Comply with all Barry Group Inc. policies, codes of conduct, and provincial employment standards.',
+      ];
+      const dH = duties.length * 13 + 10;
+      doc.rect(margin, y, contentWidth, dH).fill(LIGHT_GRAY);
+      doc.rect(margin, y, contentWidth, dH).lineWidth(0.4).stroke(BORDER);
+      y += 6;
+      duties.forEach(d => {
+        doc.fontSize(8).fillColor('#111111').font('Helvetica')
+          .text(d, margin + 6, y, { width: contentWidth - 12, lineBreak: false });
+        y += 13;
+      });
+      y += 5;
+
+      // ── SECTION 5: LMIA ──
+      sectionHeader(5, 'LMIA INFORMATION');
+
+      doc.rect(margin, y, contentWidth, 60).fill('#eaf6ee');
+      doc.rect(margin, y, contentWidth, 60).lineWidth(0.5).stroke('#27ae60');
+      doc.rect(margin, y, 4, 60).fill(GREEN);
+
+      // LMIA number large and prominent
+      doc.fontSize(6.5).fillColor('#1a5c2a').font('Helvetica-Bold')
         .text('LMIA REFERENCE NUMBER', margin + 10, y + 5, { lineBreak: false });
-      doc.fontSize(15).fillColor(RED).font('Helvetica-Bold')
-        .text(lmiaRef, margin + 10, y + 16, { lineBreak: false });
+      doc.fontSize(18).fillColor(RED).font('Helvetica-Bold')
+        .text(lmiaRef, margin + 10, y + 15, { lineBreak: false });
 
-      doc.fontSize(7.5).fillColor('#1a5c2a').font('Helvetica-Bold')
+      doc.fontSize(6.5).fillColor('#1a5c2a').font('Helvetica-Bold')
         .text('LMIA ISSUE DATE', margin + half + 14, y + 5, { lineBreak: false });
-      doc.fontSize(9).fillColor('#111111').font('Helvetica')
-        .text(today, margin + half + 14, y + 16, { lineBreak: false });
+      doc.fontSize(8.5).fillColor('#111111').font('Helvetica')
+        .text(today, margin + half + 14, y + 15, { lineBreak: false });
 
-      doc.fontSize(7.5).fillColor('#1a5c2a').font('Helvetica-Bold')
+      doc.fontSize(6.5).fillColor('#1a5c2a').font('Helvetica-Bold')
         .text('THIRD PARTY ID', margin + 10, y + 38, { lineBreak: false });
-      doc.fontSize(9).fillColor(RED).font('Helvetica-Bold')
-        .text(thirdPartyID, margin + 10, y + 49, { lineBreak: false });
+      doc.fontSize(8.5).fillColor(RED).font('Helvetica-Bold')
+        .text(thirdPartyID, margin + 10, y + 48, { lineBreak: false });
 
-      doc.fontSize(7.5).fillColor('#1a5c2a').font('Helvetica-Bold')
+      doc.fontSize(6.5).fillColor('#1a5c2a').font('Helvetica-Bold')
         .text('LMIA EXPIRY DATE', margin + half + 14, y + 38, { lineBreak: false });
-      doc.fontSize(9).fillColor('#111111').font('Helvetica')
-        .text('2026-12-31', margin + half + 14, y + 49, { lineBreak: false });
+      doc.fontSize(8.5).fillColor('#111111').font('Helvetica')
+        .text('2026-12-31', margin + half + 14, y + 48, { lineBreak: false });
 
-      y += 76;
-      doc.fontSize(7.5).fillColor('#2d7a3a').font('Helvetica-Oblique')
-        .text(
-          'This unique LMIA identifier is generated by Employment and Social Development Canada (ESDC) / Service Canada. LMIA reference numbers are given by Canadian federal work skill to Barry Group Inc. and do not constitute official government immigration decisions, visas, or work permits.',
-          margin, y, { width: contentWidth }
-        );
-      y += 26;
+      y += 64;
 
-      // ── 6. TERMS AND CONDITIONS ──
-      sectionHeader(6, 'TERMS AND CONDITIONS');
+      // ─── PAGE 2 ───
+      doc.addPage();
+      doc.rect(0, 0, pageWidth, 6).fill(DARK_BLUE);
+
+      // Small header on page 2
+      try {
+        doc.image(logoBuffer, margin, 12, { width: 150, height: 34 });
+      } catch (e) {
+        doc.fontSize(12).fillColor(DARK_BLUE).font('Helvetica-Bold').text('BARRY GROUP INC.', margin, 18);
+      }
+      doc.fontSize(7.5).fillColor(GRAY).font('Helvetica')
+        .text(`Employment Offer Letter  |  ${fullName}  |  LMIA: ${lmiaRef}`, margin, 18, { width: contentWidth, align: 'right' });
+      doc.rect(margin, 52, contentWidth, 1.5).fill(DARK_BLUE);
+      doc.rect(margin, 53, contentWidth, 0.5).fill(GOLD);
+
+      y = 62;
+
+      // Reset helpers for page 2
+      const s2Header = (num, title) => {
+        doc.rect(margin, y, contentWidth, 18).fill(DARK_BLUE);
+        doc.fontSize(9).fillColor('#ffffff').font('Helvetica-Bold')
+          .text(`${num}.  ${title}`, margin + 8, y + 4, { lineBreak: false });
+        y += 21;
+      };
+
+      const t2Col = (l1, v1, l2, v2, h = 32) => {
+        doc.rect(margin, y, contentWidth, h).fill(LIGHT_GRAY);
+        doc.rect(margin, y, contentWidth, h).lineWidth(0.4).stroke(BORDER);
+        doc.rect(margin + half + 4, y, 0.4, h).fill(BORDER);
+        doc.fontSize(6.5).fillColor('#888888').font('Helvetica-Bold')
+          .text(l1.toUpperCase(), margin + 6, y + 3, { width: half - 6, lineBreak: false });
+        doc.fontSize(8.5).fillColor('#111111').font('Helvetica')
+          .text(v1 || 'N/A', margin + 6, y + 13, { width: half - 6, lineBreak: false });
+        doc.fontSize(6.5).fillColor('#888888').font('Helvetica-Bold')
+          .text(l2.toUpperCase(), margin + half + 10, y + 3, { width: half - 6, lineBreak: false });
+        doc.fontSize(8.5).fillColor('#111111').font('Helvetica')
+          .text(v2 || 'N/A', margin + half + 10, y + 13, { width: half - 6, lineBreak: false });
+        y += h + 1;
+      };
+
+      // ── SECTION 6: TERMS ──
+      s2Header(6, 'TERMS AND CONDITIONS');
       const terms = [
         '• PROBATION: Employment is subject to a 3-month probationary period during which performance will be evaluated.',
         '• CONFIDENTIALITY: The employee agrees to maintain confidentiality of all proprietary information and trade secrets.',
-        '• WORKPLACE POLICIES: The employee must adhere to all Barry Group Inc. workplace policies and Employee Handbook.',
-        '• TERMINATION: Either party may terminate this agreement with 2 weeks written notice or payment in lieu thereof.',
+        '• POLICIES: The employee must adhere to all Barry Group Inc. workplace policies and Employee Handbook.',
+        '• TERMINATION: Either party may terminate with 2 weeks written notice or payment in lieu thereof.',
         '• COMPLIANCE: This offer is governed by the Employment Standards Act of the applicable Canadian province.',
         '• BACKGROUND CHECK: This offer is contingent upon successful completion of background verification.',
       ];
-      const termsH = terms.length * 15 + 14;
-      doc.rect(margin, y, contentWidth, termsH).fill(LIGHT_GRAY);
-      doc.rect(margin, y, contentWidth, termsH).lineWidth(0.5).stroke(BORDER);
-      y += 7;
+      const tH = terms.length * 14 + 10;
+      doc.rect(margin, y, contentWidth, tH).fill(LIGHT_GRAY);
+      doc.rect(margin, y, contentWidth, tH).lineWidth(0.4).stroke(BORDER);
+      y += 6;
       terms.forEach(t => {
-        doc.fontSize(8.5).fillColor('#111111').font('Helvetica')
-          .text(t, margin + 8, y, { width: contentWidth - 16, lineBreak: false });
-        y += 15;
+        doc.fontSize(8).fillColor('#111111').font('Helvetica')
+          .text(t, margin + 6, y, { width: contentWidth - 12, lineBreak: false });
+        y += 14;
       });
       y += 8;
 
-      // ── 7. ACCEPTANCE & SIGNATURES ──
-      sectionHeader(7, 'ACCEPTANCE & SIGNATURES');
-      doc.rect(margin, y, contentWidth, 95).fill(LIGHT_GRAY);
-      doc.rect(margin, y, contentWidth, 95).lineWidth(0.5).stroke(BORDER);
-      doc.rect(margin + contentWidth / 2, y, 0.5, 95).fill(BORDER);
+      // ── SECTION 7: SIGNATURES ──
+      s2Header(7, 'ACCEPTANCE AND SIGNATURES');
 
-      // Employer side
-      doc.fontSize(8.5).fillColor(DARK_BLUE).font('Helvetica-Bold')
-        .text('EMPLOYER REPRESENTATIVE', margin + 10, y + 8, { lineBreak: false });
-      doc.rect(margin + 10, y + 52, 175, 0.8).fill(GRAY);
-      doc.fontSize(9).fillColor('#111111').font('Helvetica-Bold')
-        .text('Emira J. Kadiric', margin + 10, y + 57, { lineBreak: false });
-      doc.fontSize(8).fillColor(GRAY).font('Helvetica')
-        .text('Chief Executive Officer, Barry Group Inc.', margin + 10, y + 70, { lineBreak: false })
-        .text(`Date: ${today}`, margin + 10, y + 82, { lineBreak: false });
+      doc.rect(margin, y, contentWidth, 100).fill(LIGHT_GRAY);
+      doc.rect(margin, y, contentWidth, 100).lineWidth(0.4).stroke(BORDER);
+      doc.rect(margin + contentWidth / 2, y, 0.5, 100).fill(BORDER);
 
-      // Employee side
-      doc.fontSize(8.5).fillColor(DARK_BLUE).font('Helvetica-Bold')
-        .text('EMPLOYEE ACCEPTANCE', margin + contentWidth / 2 + 10, y + 8, { lineBreak: false });
-      doc.rect(margin + contentWidth / 2 + 10, y + 52, 175, 0.8).fill(GRAY);
+      // Employer
+      doc.fontSize(8).fillColor(DARK_BLUE).font('Helvetica-Bold')
+        .text('EMPLOYER REPRESENTATIVE', margin + 8, y + 8, { lineBreak: false });
+      doc.fontSize(7.5).fillColor(GRAY).font('Helvetica')
+        .text('By signing below, the employer confirms this offer:', margin + 8, y + 20, { lineBreak: false });
+      doc.rect(margin + 8, y + 58, 175, 0.7).fill(GRAY);
       doc.fontSize(9).fillColor('#111111').font('Helvetica-Bold')
-        .text(fullName, margin + contentWidth / 2 + 10, y + 57, { lineBreak: false });
-      doc.fontSize(8).fillColor(GRAY).font('Helvetica')
-        .text('Applicant Signature', margin + contentWidth / 2 + 10, y + 70, { lineBreak: false })
-        .text('Date: ____________________', margin + contentWidth / 2 + 10, y + 82, { lineBreak: false });
+        .text('Emira J. Kadiric', margin + 8, y + 63, { lineBreak: false });
+      doc.fontSize(7.5).fillColor(GRAY).font('Helvetica')
+        .text('Chief Executive Officer', margin + 8, y + 75, { lineBreak: false })
+        .text('Barry Group Inc.', margin + 8, y + 86, { lineBreak: false });
+
+      // Employee
+      doc.fontSize(8).fillColor(DARK_BLUE).font('Helvetica-Bold')
+        .text('EMPLOYEE ACCEPTANCE', margin + contentWidth / 2 + 8, y + 8, { lineBreak: false });
+      doc.fontSize(7.5).fillColor(GRAY).font('Helvetica')
+        .text('By signing, I accept this offer of employment:', margin + contentWidth / 2 + 8, y + 20, { lineBreak: false });
+      doc.rect(margin + contentWidth / 2 + 8, y + 58, 175, 0.7).fill(GRAY);
+      doc.fontSize(9).fillColor('#111111').font('Helvetica-Bold')
+        .text(fullName, margin + contentWidth / 2 + 8, y + 63, { lineBreak: false });
+      doc.fontSize(7.5).fillColor(GRAY).font('Helvetica')
+        .text('Applicant Signature', margin + contentWidth / 2 + 8, y + 75, { lineBreak: false })
+        .text('Date: _______________________', margin + contentWidth / 2 + 8, y + 86, { lineBreak: false });
+
+      y += 110;
+
+      // ── LMIA DISCLAIMER ──
+      doc.rect(margin, y, contentWidth, 28).fill('#fff9e6');
+      doc.rect(margin, y, 3, 28).fill(GOLD);
+      doc.fontSize(7).fillColor('#7a5900').font('Helvetica-Oblique')
+        .text(
+          `LMIA Reference ${lmiaRef}: This 7-digit number beginning with 8 is issued by Employment and Social Development Canada (ESDC) / Service Canada for this position at Barry Group Inc. It does not constitute a visa, work permit, or official immigration approval.`,
+          margin + 8, y + 5, { width: contentWidth - 14 }
+        );
+      y += 32;
 
       // ── FOOTER ON ALL PAGES ──
       const range = doc.bufferedPageRange();
       for (let i = 0; i < range.count; i++) {
         doc.switchToPage(range.start + i);
-        const footerY = doc.page.height - 48;
-        doc.rect(0, footerY, pageWidth, 48).fill(DARK_BLUE);
-        doc.rect(0, footerY, pageWidth, 2.5).fill(GOLD);
-
-        doc.fontSize(7.5).fillColor('#a8d8ea').font('Helvetica')
+        const fY = doc.page.height - 38;
+        doc.rect(0, fY, pageWidth, 38).fill(DARK_BLUE);
+        doc.rect(0, fY, pageWidth, 2).fill(GOLD);
+        doc.fontSize(7).fillColor('#a8d8ea').font('Helvetica')
           .text(
             'Barry Group Inc.  |  415 Griffin Dr, Corner Brook, NL A2H 3E9, Canada  |  barrygroup.ltd.inc@gmail.com',
-            margin, footerY + 8, { width: contentWidth, align: 'center', lineBreak: false }
+            margin, fY + 7, { width: contentWidth, align: 'center', lineBreak: false }
           );
-        doc.fontSize(7).fillColor('#6a9bbf')
+        doc.fontSize(6.5).fillColor('#6a9bbf')
           .text(
-            'This document is issued by Barry Group Inc. for employment purposes only. All information is provided by authorized users.',
-            margin, footerY + 22, { width: contentWidth, align: 'center', lineBreak: false }
+            'This document is issued by Barry Group Inc. for employment purposes only and does not constitute an official government document.',
+            margin, fY + 19, { width: contentWidth, align: 'center', lineBreak: false }
           );
-        doc.fontSize(7.5).fillColor('#a8d8ea')
-          .text(`Page ${i + 1} of ${range.count}`, margin, footerY + 36,
+        doc.fontSize(7).fillColor('#a8d8ea')
+          .text(`Page ${i + 1} of ${range.count}`, margin, fY + 28,
             { width: contentWidth, align: 'right', lineBreak: false });
       }
 
