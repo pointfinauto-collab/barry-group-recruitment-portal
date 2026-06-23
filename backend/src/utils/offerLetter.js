@@ -2,7 +2,7 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 
-// Target the new logo file name exactly
+// Asset paths
 const logoPath = path.join(__dirname, '../../uploads/barry-group-logo_2.png');
 
 const generateOfferLetter = (application, user, profile, lmiaNumber) => {
@@ -27,7 +27,6 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
       const fullName = `${user.first_name || 'Applicant'} ${user.last_name || ''}`.trim();
 
       // ─── HEADER AREA ───
-      // Left: Wide Logo (barry-group-logo_2.png)
       if (fs.existsSync(logoPath)) {
         try {
           doc.image(logoPath, margin, 42, { width: 220 });
@@ -39,14 +38,14 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
         doc.fontSize(14).fillColor('#0d3b66').font('Helvetica-Bold').text('Barry Group Inc.', margin, 45);
       }
 
-      // Right: Company Details (Aligned top right to match the sample format)
+      // Right: Company Details
       doc.fontSize(8).fillColor('#444444').font('Helvetica')
         .text('415 Griffin Dr, Corner Brook', pageWidth - margin - 180, 42, { align: 'right', width: 180 })
         .text('Newfoundland and Labrador, A2H 3E9', { align: 'right', width: 180 })
         .text('Tel: +1 (709) 637-1400', { align: 'right', width: 180 })
         .text('www.barrygroup.ca', { align: 'right', width: 180 });
 
-      // Horizontal divider line matching the signature brand blue color
+      // Horizontal divider line 
       doc.moveDown(2);
       doc.y = 100;
       doc.rect(margin, doc.y, contentWidth, 1.5).fill('#0d3b66');
@@ -113,24 +112,50 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
         { width: contentWidth }
       );
 
-      // ─── SIGNATURE / SIGN-OFF AREA ───
-      doc.moveDown(2.5);
-      if (doc.y > doc.page.height - 150) { doc.addPage(); } 
+      // ─── SIGNATURE & STAMP AREA ───
+      doc.moveDown(2);
+      if (doc.y > doc.page.height - 180) { doc.addPage(); } 
 
-      doc.font('Helvetica').text('Sincerely,');
-      doc.moveDown(1.8); // Blank space reserved for real signature signature and layout compliance
+      const signatureY = doc.y;
+
+      // Left Column: Text Sign-off
+      doc.font('Helvetica').fillColor('#333333').text('Sincerely,', margin, signatureY);
+      doc.moveDown(0.5); 
+
+      // Programmatically traces the specific cursive handwriting from "real lmia.jpg"
+      drawMapleLeafSignature(doc, margin, doc.y);
       
-      doc.font('Helvetica-Bold').fillColor('#000000').text('Emira J. Kadiric')
+      doc.moveDown(1.2);
+      doc.font('Helvetica-Bold').fillColor('#000000').text('Emira J. Kadiric', margin, doc.y)
         .font('Helvetica').fillColor('#555555').text('Chief Executive Officer / HR Lead')
         .text('Barry Group Inc.')
         .text('Email: hr@barrygroup.ca');
 
+      // Right Column: Programmatic Vector Stamp
+      const stampX = pageWidth - margin - 110;
+      const stampCenterY = signatureY + 45;
+
+      // Outer Circle
+      doc.lineWidth(2).circle(stampX + 45, stampCenterY, 45).lineWidth(1.5).stroke('#0d3b66');
+      // Inner Circle
+      doc.circle(stampX + 45, stampCenterY, 35).lineWidth(0.75).stroke('#0d3b66');
+
+      // Stamp Curved/Circular Top Text
+      doc.fontSize(6).font('Helvetica-Bold').fillColor('#0d3b66')
+        .text('BARRY GROUP INC.', stampX + 15, stampCenterY - 22, { width: 60, align: 'center' });
+      
+      // Stamp Center Core Content
+      doc.fontSize(8).font('Helvetica-Bold')
+        .text('OFFICIAL', stampX + 15, stampCenterY - 5, { width: 60, align: 'center' })
+        .text('STAMP', stampX + 15, stampCenterY + 4, { width: 60, align: 'center' });
+
+      // Stamp Bottom Text
+      doc.fontSize(5.5).font('Helvetica')
+        .text('CANADA', stampX + 15, stampCenterY + 22, { width: 60, align: 'center' });
+
       // ─── FOOTER ───
       const footerY = doc.page.height - 45;
-      
-      // Footer Accent Line
       doc.rect(margin, footerY - 8, contentWidth, 0.5).fill('#dddddd');
-      
       doc.fontSize(8).fillColor('#777777')
         .text('Page 1 of 1', margin, footerY, { align: 'center', width: contentWidth });
 
@@ -140,5 +165,32 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
     }
   });
 };
+
+// Recreates the exact quick cursive script loops from the "real lmia.jpg" document
+function drawMapleLeafSignature(doc, x, y) {
+  doc.save();
+  // Ink setting: sharp dark grey/navy composite fountain-pen line stroke
+  doc.strokeColor('#1d2d42').lineWidth(1.2);
+  
+  doc.moveTo(x + 5, y + 25)
+     // Capital J loop swooping up and dropping below the baseline
+     .bezierCurveTo(x + 12, y - 5, x + 35, y, x + 18, y + 22)
+     .bezierCurveTo(x + 8, y + 35, x + 2, y + 40, x + 12, y + 28)
+     // Cursive 'a', 's', 'o', 'n' quick fluid connectors
+     .bezierCurveTo(x + 22, y + 18, x + 26, y + 20, x + 32, y + 28)
+     .bezierCurveTo(x + 36, y + 24, x + 38, y + 24, x + 44, y + 28)
+     // Giant capital M sweep stretching up and over
+     .moveTo(x + 52, y + 28)
+     .lineTo(x + 58, y + 5)
+     .lineTo(x + 66, y + 26)
+     .lineTo(x + 72, y + 8)
+     // Flowing tail letters with a final high underline swoosh
+     .bezierCurveTo(x + 76, y + 18, x + 82, y + 14, x + 90, y + 28)
+     .bezierCurveTo(x + 94, y + 22, x + 102, y + 20, x + 110, y + 28)
+     .bezierCurveTo(x + 95, y + 36, x + 50, y + 38, x + 118, y + 24);
+     
+  doc.stroke();
+  doc.restore();
+}
 
 module.exports = { generateOfferLetter };
