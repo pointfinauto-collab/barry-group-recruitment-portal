@@ -1,11 +1,13 @@
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
+const sharp = require('sharp'); 
 
-const logoPath = path.join(__dirname, '../../uploads/barry_group_logo.jpg');
+// Updated to match your new logo file name exactly
+const logoPath = path.join(__dirname, '../../uploads/barry-group-logo.png');
 
 const generateOfferLetter = (application, user, profile, lmiaNumber) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => { 
     try {
       const doc = new PDFDocument({ size: 'A4', margin: 40 });
       const chunks = [];
@@ -27,29 +29,35 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
         .text(`|||||||||||||||||||||||||||||||||||||||||||||||||||  ${appNumber}`, margin + 5, 25, { width: contentWidth - 10 });
 
       doc.moveDown(0.5);
-      doc.y = 45;
+      
+      // ─── HEADER AREA (Adjusted for wide logo) ───
+      let headerTextY = 52; 
 
-      // ─── HEADER: Service Canada style ───
-      // Left: Logo box
-      doc.rect(margin, 48, 90, 55).stroke('#cc0000');
       if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, margin + 5, 52, { width: 80, height: 45 });
+        try {
+          const normalizedLogoBuffer = await sharp(logoPath)
+            .png()
+            .toBuffer();
+
+          // Render the wide barry-group-logo.png across a wider span (width: 220)
+          doc.image(normalizedLogoBuffer, margin, 48, { width: 220 });
+          headerTextY = 52; 
+        } catch (imageErr) {
+          console.error("Failed to parse image with sharp, using text fallback:", imageErr.message);
+          renderTextFallback(doc, margin, 48);
+        }
       } else {
-        doc.fontSize(10).fillColor('#cc0000').font('Helvetica-Bold')
-          .text('Barry', margin + 10, 58)
-          .text('Group', margin + 10, 70)
-          .text('Inc.', margin + 10, 82);
+        renderTextFallback(doc, margin, 48);
       }
 
-      // Right of logo: Company name and document title
-      doc.fontSize(16).fillColor('#cc0000').font('Helvetica-Bold')
-        .text('Barry Group Inc.', margin + 100, 52);
+      // Metadata placed to the right of the wide logo layout
       doc.fontSize(11).fillColor('#000000').font('Helvetica-Bold')
-        .text('LABOUR MARKET IMPACT ASSESSMENT FOR SMT#', margin + 100, 72);
+        .text('LABOUR MARKET IMPACT ASSESSMENT FOR SMT#', margin + 240, headerTextY, { width: contentWidth - 240 });
       doc.fontSize(13).fillColor('#cc0000').font('Helvetica-Bold')
-        .text(refNumber, margin + 100, 87);
+        .text(refNumber, margin + 240, doc.y + 5);
 
-      doc.y = 115;
+      // Give enough vertical spacing before starting the document body
+      doc.y = 120;
 
       // ANNEXA
       doc.fontSize(11).fillColor('#000000').font('Helvetica-Bold')
@@ -147,11 +155,9 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
       doc.rect(margin, doc.y, contentWidth, 1).fill('#000000');
       doc.moveDown(0.3);
 
-      // Table header
       const col1 = margin;
       const col2 = margin + 110;
       const col3 = margin + 230;
-      const col4 = margin + 350;
 
       doc.fontSize(9).font('Helvetica-Bold');
       doc.text('Last Name', col1, doc.y);
@@ -161,7 +167,6 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
       doc.rect(margin, doc.y, contentWidth, 0.5).fill('#000000');
       doc.moveDown(0.3);
 
-      // Worker row
       doc.fontSize(9).font('Helvetica');
       const lastName = user.last_name?.toUpperCase() || 'N/A';
       const firstName = user.first_name?.toUpperCase() || 'N/A';
@@ -172,7 +177,6 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
       doc.text(passport, col3, doc.y - 10);
       doc.moveDown(0.5);
 
-      // Worker details
       const workerDetails = [
         ['Nationality', profile?.nationality || user.country || 'N/A'],
         ['Job Information', application.desired_position || 'N/A'],
@@ -195,7 +199,7 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
           doc.moveDown(0.2);
           return;
         }
-        doc.fontSize(9).font(label.startsWith('  ') ? 'Helvetica' : 'Helvetica').fillColor('#000000');
+        doc.fontSize(9).font('Helvetica').fillColor('#000000');
         if (value) {
           doc.text(label, margin, doc.y, { continued: true, width: 180 });
           doc.text(`  ${value}`, { width: contentWidth - 180 });
@@ -217,21 +221,17 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
       // ─── FOOTER BOX ───
       const footerY = doc.page.height - 80;
 
-      // Left footer - representative info
       doc.fontSize(9).font('Helvetica-Bold').fillColor('#cc0000')
         .text('Barry Group Inc.', margin, footerY);
       doc.fontSize(8).font('Helvetica').fillColor('#000000')
         .text('415 Griffin Dr, Corner Brook, NL A2H 3E9, Canada', margin, footerY + 12)
         .text('Tel: barrygroup.ltd.inc@gmail.com', margin, footerY + 22);
 
-      // Right footer - logos area
       doc.fontSize(8).font('Helvetica').fillColor('#000000')
         .text('Page 1 of 1', margin, footerY + 35, { align: 'center', width: contentWidth });
 
-      // Bottom border
       doc.rect(margin, footerY + 50, contentWidth, 1).fill('#cc0000');
 
-      // Canada wordmark style
       doc.fontSize(14).fillColor('#cc0000').font('Helvetica-Bold')
         .text('Canada', pageWidth - margin - 80, footerY + 5);
 
@@ -241,5 +241,10 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
     }
   });
 };
+
+function renderTextFallback(doc, margin, startY) {
+  doc.fontSize(14).fillColor('#000000').font('Helvetica-Bold')
+    .text('BARRY GROUP INC.', margin, startY);
+}
 
 module.exports = { generateOfferLetter };
