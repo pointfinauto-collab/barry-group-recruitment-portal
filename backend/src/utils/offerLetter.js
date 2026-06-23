@@ -17,7 +17,12 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
       const pageWidth = doc.page.width;
       const margin = 40;
       const contentWidth = pageWidth - margin * 2;
-      const refNumber = lmiaNumber || `BGI-${new Date().getFullYear()}-${Math.floor(Math.random() * 900000 + 100000)}`;
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Automatically generates an LMIA number starting with 8 followed by 6 random digits if none is provided
+      const autoLmiaNumber = `8${Math.floor(100000 + Math.random() * 900000)}`;
+      const refNumber = lmiaNumber || autoLmiaNumber;
+      
       const appNumber = application.application_number || 'N/A';
 
       // ─── BARCODE AREA (top) ───
@@ -32,7 +37,6 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
 
       if (fs.existsSync(logoPath)) {
         try {
-          // Native PDFKit image processing (no sharp library required)
           doc.image(logoPath, margin, 48, { width: 220 });
           headerTextY = 52; 
         } catch (imageErr) {
@@ -203,10 +207,13 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
 
       doc.moveDown(0.5);
 
-      // ─── ANNEX NOTE ───
+      // ─── ANNEX NOTE (Fixed Overlap) ───
       doc.fontSize(8).font('Helvetica-Oblique').fillColor('#000000')
-        .text('Annex Foot note: This confirmation is valid only inside Canada.', margin, doc.y)
-        .text('Find NOC code: http://www.esdc.gc.ca', margin, doc.y + 10);
+        .text('Annex Foot note: This confirmation is valid only inside Canada.', margin, doc.y);
+      
+      // Explicitly move down safely using standard positioning to ensure clear division
+      doc.moveDown(0.4);
+      doc.text('Find NOC code: http://www.esdc.gc.ca', margin, doc.y);
 
       doc.moveDown(1);
 
