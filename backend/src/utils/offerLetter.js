@@ -38,12 +38,12 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
         doc.fontSize(14).fillColor('#0d3b66').font('Helvetica-Bold').text('Barry Group Inc.', margin, 45);
       }
 
-      // Right: Company Details
+      // Right: Company Details (Updated Email and URL)
       doc.fontSize(8).fillColor('#444444').font('Helvetica')
-        .text('415 Griffin Dr, Corner Brook', pageWidth - margin - 180, 42, { align: 'right', width: 180 })
-        .text('Newfoundland and Labrador, A2H 3E9', { align: 'right', width: 180 })
-        .text('Tel: +1 (709) 637-1400', { align: 'right', width: 180 })
-        .text('www.barrygroup.ca', { align: 'right', width: 180 });
+        .text('415 Griffin Dr, Corner Brook', pageWidth - margin - 220, 42, { align: 'right', width: 220 })
+        .text('Newfoundland and Labrador, A2H 3E9', { align: 'right', width: 220 })
+        .text('Email: barrygroup.ltd.inc@gmail.com', { align: 'right', width: 220 })
+        .text('https://barry-group-frontend.onrender.com/', { align: 'right', width: 220 });
 
       // Horizontal divider line 
       doc.moveDown(2);
@@ -129,7 +129,7 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
       doc.font('Helvetica-Bold').fillColor('#000000').text('Emira J. Kadiric', margin, doc.y)
         .font('Helvetica').fillColor('#555555').text('Chief Executive Officer / HR Lead')
         .text('Barry Group Inc.')
-        .text('Email: hr@barrygroup.ca');
+        .text('Email: barrygroup.ltd.inc@gmail.com');
 
       // Right Column: Programmatic Vector Stamp
       const stampX = pageWidth - margin - 110;
@@ -166,25 +166,19 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
   });
 };
 
-// Recreates the exact quick cursive script loops from the "real lmia.jpg" document
 function drawMapleLeafSignature(doc, x, y) {
   doc.save();
-  // Ink setting: sharp dark grey/navy composite fountain-pen line stroke
   doc.strokeColor('#1d2d42').lineWidth(1.2);
   
   doc.moveTo(x + 5, y + 25)
-     // Capital J loop swooping up and dropping below the baseline
      .bezierCurveTo(x + 12, y - 5, x + 35, y, x + 18, y + 22)
      .bezierCurveTo(x + 8, y + 35, x + 2, y + 40, x + 12, y + 28)
-     // Cursive 'a', 's', 'o', 'n' quick fluid connectors
      .bezierCurveTo(x + 22, y + 18, x + 26, y + 20, x + 32, y + 28)
      .bezierCurveTo(x + 36, y + 24, x + 38, y + 24, x + 44, y + 28)
-     // Giant capital M sweep stretching up and over
      .moveTo(x + 52, y + 28)
      .lineTo(x + 58, y + 5)
      .lineTo(x + 66, y + 26)
      .lineTo(x + 72, y + 8)
-     // Flowing tail letters with a final high underline swoosh
      .bezierCurveTo(x + 76, y + 18, x + 82, y + 14, x + 90, y + 28)
      .bezierCurveTo(x + 94, y + 22, x + 102, y + 20, x + 110, y + 28)
      .bezierCurveTo(x + 95, y + 36, x + 50, y + 38, x + 118, y + 24);
