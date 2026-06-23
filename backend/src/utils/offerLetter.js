@@ -1,13 +1,12 @@
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
-const sharp = require('sharp'); 
 
-// Updated to match your new logo file name exactly
+// Target the new PNG logo file directly
 const logoPath = path.join(__dirname, '../../uploads/barry-group-logo.png');
 
 const generateOfferLetter = (application, user, profile, lmiaNumber) => {
-  return new Promise(async (resolve, reject) => { 
+  return new Promise((resolve, reject) => { 
     try {
       const doc = new PDFDocument({ size: 'A4', margin: 40 });
       const chunks = [];
@@ -18,10 +17,8 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
       const pageWidth = doc.page.width;
       const margin = 40;
       const contentWidth = pageWidth - margin * 2;
-      const today = new Date().toISOString().split('T')[0];
       const refNumber = lmiaNumber || `BGI-${new Date().getFullYear()}-${Math.floor(Math.random() * 900000 + 100000)}`;
       const appNumber = application.application_number || 'N/A';
-      const fullName = `${user.first_name} ${user.last_name}`;
 
       // ─── BARCODE AREA (top) ───
       doc.rect(margin, 20, contentWidth, 18).fill('#000000');
@@ -35,15 +32,11 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
 
       if (fs.existsSync(logoPath)) {
         try {
-          const normalizedLogoBuffer = await sharp(logoPath)
-            .png()
-            .toBuffer();
-
-          // Render the wide barry-group-logo.png across a wider span (width: 220)
-          doc.image(normalizedLogoBuffer, margin, 48, { width: 220 });
+          // Native PDFKit image processing (no sharp library required)
+          doc.image(logoPath, margin, 48, { width: 220 });
           headerTextY = 52; 
         } catch (imageErr) {
-          console.error("Failed to parse image with sharp, using text fallback:", imageErr.message);
+          console.error("PDFKit failed to parse the logo file, using text fallback:", imageErr.message);
           renderTextFallback(doc, margin, 48);
         }
       } else {
@@ -67,7 +60,6 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
 
       // ─── INFO BOX ───
       doc.fontSize(9).fillColor('#000000').font('Helvetica');
-      const infoY = doc.y;
 
       const infoLines = [
         ['System File Number', appNumber],
