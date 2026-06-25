@@ -169,7 +169,7 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
         doc.image(sigBuffer, leftX, sigY, { width: 140, height: 52 });
       } catch(e) {
         doc.fontSize(16).fillColor('#1a1a1a').font('Helvetica-Oblique')
-          .text('Emira J. Kadiric', leftX, sigY + 10);
+          .text('Sharia J. Blackburn', leftX, sigY + 10);
       }
 
       // Line under signature
@@ -178,7 +178,7 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
 
       // Name and title
       doc.fontSize(9.5).fillColor(GRAY).font('Helvetica-Bold')
-        .text('Emira J. Kadiric', leftX, lineY + 5);
+        .text('Sharia J. Blackburn', leftX, lineY + 5);
       doc.fontSize(8.5).fillColor(GRAY).font('Helvetica')
         .text('Human Resources Manager', leftX, lineY + 18)
         .text('Barry Group Inc.', leftX, lineY + 30)
@@ -186,34 +186,33 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
         .text('Tel: +1 (709) 634-0000', leftX, lineY + 54);
 
       // ── RIGHT: EMPLOYEE ACCEPTANCE ──
-      doc.fontSize(9.5).fillColor(NAVY).font('Helvetica-Bold')
+      // ── RIGHT: EMPLOYEE ACCEPTANCE ──
+      doc.fontSize(10).fillColor(NAVY).font('Helvetica-Bold')
         .text('Employee Acceptance', rightX, y);
 
       doc.fontSize(8.5).fillColor(GRAY).font('Helvetica')
         .text(
           'I, the undersigned, hereby accept the above offer of employment and agree to the terms and conditions stated in this letter.',
-          rightX, y + 14, { width: colW }
+          rightX, y + 16, { width: colW }
         );
 
-      // Signature line for employee
-      const empSigY = sigY + 10;
-      doc.rect(rightX, empSigY, colW, 0.8).fill(BORD);
+      // --- Applicant Signature line ---
+      const empSigY = y + 56;
       doc.fontSize(7.5).fillColor('#888888').font('Helvetica')
-        .text('Applicant Signature', rightX, empSigY + 4, { width: colW, align: 'left', lineBreak: false });
+        .text('Applicant Signature:', rightX, empSigY, { lineBreak: false });
+      doc.rect(rightX, empSigY + 14, colW, 0.8).fill(BORD);
 
-      // Name line
-      doc.rect(rightX, empSigY + 26, colW, 0.8).fill(BORD);
+      // --- Full Name line ---
       doc.fontSize(7.5).fillColor('#888888').font('Helvetica')
-        .text('Full Name (Print)', rightX, empSigY + 30, { width: colW, lineBreak: false });
-
-      // Pre-filled name
+        .text('Full Name (Print):', rightX, empSigY + 26, { lineBreak: false });
+      doc.rect(rightX, empSigY + 40, colW, 0.8).fill(BORD);
       doc.fontSize(9).fillColor(GRAY).font('Helvetica-Bold')
-        .text(fullName, rightX, empSigY + 40, { width: colW, lineBreak: false });
+        .text(fullName, rightX, empSigY + 44, { width: colW, lineBreak: false });
 
-      // Date line
-      doc.rect(rightX, empSigY + 54, colW, 0.8).fill(BORD);
+      // --- Date line ---
       doc.fontSize(7.5).fillColor('#888888').font('Helvetica')
-        .text('Date of Acceptance', rightX, empSigY + 58, { width: colW, lineBreak: false });
+        .text('Date of Acceptance:', rightX, empSigY + 58, { lineBreak: false });
+      doc.rect(rightX, empSigY + 72, colW, 0.8).fill(BORD);
 
       // ── GOLDEN SEAL — centred between columns or overlapping ──
       const sealSize = 100;
