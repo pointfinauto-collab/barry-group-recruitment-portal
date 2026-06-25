@@ -236,7 +236,7 @@ const generateOfferLetter = (application, user, profile, lmiaNumber) => {
         );
       doc.fontSize(6.5).fillColor('#a8d8ea')
         .text(
-          'This document is issued by Barry Group Inc. for employment purposes only and does not constitute an official government document.',
+          'This document is issued by Barry Group Inc. for employment purposes only and it is used for application of work permit.',
           ML, fY + 20, { width: CW, align: 'center', lineBreak: false }
         );
 
