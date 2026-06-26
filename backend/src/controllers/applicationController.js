@@ -9,10 +9,9 @@ const generateAppNumber = async () => {
 };
 
 const generateLMIANumber = async () => {
-  const year = new Date().getFullYear();
-  const result = await pool.query("SELECT nextval('lmia_seq') as seq");
-  const seq = result.rows[0].seq.toString().padStart(6, '0');
-  return `LMIA-${year}-${seq}`;
+  // 7 digits starting with 8 — unique random number
+  const digits = Math.floor(100000 + Math.random() * 900000);
+  return `8${digits}`;
 };
 
 const submitApplication = async (req, res) => {
